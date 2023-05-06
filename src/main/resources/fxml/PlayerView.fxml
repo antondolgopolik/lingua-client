@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+
+<StackPane style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.PlayerController">
+   <children>
+        <VBox fx:id="playerVBox" StackPane.alignment="CENTER_LEFT">
+            <children>
+                <StackPane fx:id="topBarStackPane" prefHeight="70.0" style="-fx-background-color: black;">
+                    <children>
+                        <Button fx:id="menuButton" mnemonicParsing="false" text="Menu" StackPane.alignment="CENTER_LEFT" />
+                    </children>
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                </StackPane>
+                <StackPane fx:id="imageViewStackPane" style="-fx-background-color: black;" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
+                        <VBox alignment="BOTTOM_CENTER" spacing="15.0" StackPane.alignment="BOTTOM_CENTER">
+                            <children>
+                                <TextFlow fx:id="textFlow1" textAlignment="CENTER" />
+                                <TextFlow fx:id="textFlow2" textAlignment="CENTER" />
+                            </children>
+                        </VBox>
+                    </children>
+                </StackPane>
+                <HBox fx:id="botBarHBox" alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0" style="-fx-background-color: black;">
+                    <children>
+                        <Button fx:id="backButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+                            <graphic>
+                                <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/rewind-back.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="toggleButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+                            <graphic>
+                                <ImageView fx:id="toggleImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/play.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="forwardButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+                            <graphic>
+                                <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/rewind-forward.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Slider fx:id="timeSlider" layoutY="32.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0" />
+                                <Label fx:id="passedTimeLabel" layoutX="8.0" layoutY="58.0" textFill="#faf9f6" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="0.0" />
+                                <Label fx:id="leftTimeLabel" layoutX="629.0" layoutY="50.0" textFill="#faf9f6" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="0.0" />
+                            </children>
+                        </AnchorPane>
+                        <Button fx:id="subButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+                            <graphic>
+                                <ImageView fx:id="subImageView" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/cc-on.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="soundButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
+                            <graphic>
+                                <ImageView fx:id="soundImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../img/sound.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Slider fx:id="soundSlider" prefWidth="100.0" value="100.0" />
+                    </children>
+                    <padding>
+                        <Insets left="15.0" right="15.0" />
+                    </padding>
+                </HBox>
+            </children>
+        </VBox>
+      <fx:include fx:id="wordPanel" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="0.0" source="WordPanelView.fxml" StackPane.alignment="CENTER_RIGHT" />
+   </children>
+</StackPane>
