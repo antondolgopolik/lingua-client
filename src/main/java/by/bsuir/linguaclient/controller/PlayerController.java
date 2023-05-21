@@ -4,12 +4,15 @@ import by.bsuir.linguaclient.api.dictionary.DictionaryClient;
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import by.bsuir.linguaclient.configuration.ResourceHolder;
 import by.bsuir.linguaclient.controller.component.WordPanelController;
-import by.bsuir.linguaclient.dto.lingua.SubtitleDto;
-import by.bsuir.linguaclient.dto.lingua.VideoContentDetailsDto;
+import by.bsuir.linguaclient.dto.lingua.LanguageDto;
+import by.bsuir.linguaclient.dto.lingua.PersonalDuoWatchRequestDto;
+import by.bsuir.linguaclient.dto.lingua.PlayerMessageDto;
+import by.bsuir.linguaclient.dto.lingua.PlayerMessageType;
 import by.bsuir.linguaclient.subtitle.Subtitle;
 import by.bsuir.linguaclient.subtitle.SubtitleItem;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -19,13 +22,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.stereotype.Component;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
@@ -33,6 +42,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -98,9 +108,15 @@ public class PlayerController implements Initializable {
     private final MediaPlayerFactory mediaPlayerFactory;
     private final EmbeddedMediaPlayer embeddedMediaPlayer;
 
-    private VideoContentDetailsDto.VideoContentLocDto videoContentLocDto;
-    private SubtitleDto subtitleDto;
+    private StompSession stompSession;
+    private PersonalDuoWatchRequestDto duoWatchRequestDto;
+
+    private LanguageDto videoContentLanguage;
+    private LanguageDto secondLanguage;
     private Subtitle subtitle;
+    private Scene scene;
+    private EventHandler<? super KeyEvent> sceneKeyPressedHandler;
+
 
     private final AtomicBoolean blockTimeSliderUpdate = new AtomicBoolean(false);
     private final AtomicBoolean blockPositionChange = new AtomicBoolean(false);
@@ -130,28 +146,40 @@ public class PlayerController implements Initializable {
         imageView.fitWidthProperty().bind(imageViewStackPane.widthProperty());
         imageView.fitHeightProperty().bind(imageViewStackPane.heightProperty());
 
-        backButton.setOnAction(event -> {
-            if (blockPositionChange.compareAndSet(false, true)) {
-                long newTime = embeddedMediaPlayer.status().time() - 10 * 1000;
-                embeddedMediaPlayer.controls().setTime(newTime);
-                textFlow1.getChildren().clear();
-                textFlow2.getChildren().clear();
-                subtitle.back(newTime);
-                blockPositionChange.set(false);
+        menuButton.setOnAction(event -> {
+            if (stompSession != null) {
+                stompSession.disconnect();
             }
+            mediaPlayerFactory.release();
+            resourceHolder.setMediaPlayerFactory(null);
+            embeddedMediaPlayer.controls().stop();
+            embeddedMediaPlayer.release();
+            resourceHolder.setEmbeddedMediaPlayer(null);
+            scene.removeEventHandler(KeyEvent.KEY_PRESSED, sceneKeyPressedHandler);
+            scene.setRoot(fxWeaver.loadView(CatalogController.class));
+        });
+        backButton.setOnAction(event -> {
+            handleBack();
+
+            PlayerMessageDto playerMessage = new PlayerMessageDto();
+            playerMessage.setMessageType(PlayerMessageType.BACK);
+            sendMessage(playerMessage);
+        });
+        toggleButton.setOnAction(event -> {
+            handleToggle();
+
+            PlayerMessageDto playerMessage = new PlayerMessageDto();
+            playerMessage.setMessageType(PlayerMessageType.TOGGLE);
+            sendMessage(playerMessage);
         });
         forwardButton.setOnAction(event -> {
-            if (blockPositionChange.compareAndSet(false, true)) {
-                long newTime = embeddedMediaPlayer.status().time() + 10 * 1000;
-                embeddedMediaPlayer.controls().setTime(newTime);
-                textFlow1.getChildren().clear();
-                textFlow2.getChildren().clear();
-                subtitle.forward(newTime);
-                blockPositionChange.set(false);
-            }
+            handleForward();
+
+            PlayerMessageDto playerMessage = new PlayerMessageDto();
+            playerMessage.setMessageType(PlayerMessageType.FORWARD);
+            sendMessage(playerMessage);
         });
-        toggleButton.setOnAction(event -> embeddedMediaPlayer.controls().pause());
-        timeSlider.valueChangingProperty().addListener((observableValue, newV, oldV) -> {
+        timeSlider.valueChangingProperty().addListener((observableValue, oldV, newV) -> {
             if (!newV) {
                 setPositionFromTimeSliderValue(timeSlider.getValue());
             }
@@ -174,9 +202,35 @@ public class PlayerController implements Initializable {
         soundSlider.valueProperty().addListener((observableValue, oldV, newV) -> embeddedMediaPlayer.audio().setVolume(newV.intValue()));
     }
 
-    private void setPositionFromTimeSliderValue(double sliderValue) {
+    private void handleBack() {
         if (blockPositionChange.compareAndSet(false, true)) {
-            embeddedMediaPlayer.controls().setPosition((float) sliderValue / 100);
+            long newTime = embeddedMediaPlayer.status().time() - 10 * 1000;
+            embeddedMediaPlayer.controls().setTime(newTime);
+            textFlow1.getChildren().clear();
+            textFlow2.getChildren().clear();
+            subtitle.back(newTime);
+            blockPositionChange.set(false);
+        }
+    }
+
+    private void handleToggle() {
+        embeddedMediaPlayer.controls().pause();
+    }
+
+    private void handleForward() {
+        if (blockPositionChange.compareAndSet(false, true)) {
+            long newTime = embeddedMediaPlayer.status().time() + 10 * 1000;
+            embeddedMediaPlayer.controls().setTime(newTime);
+            textFlow1.getChildren().clear();
+            textFlow2.getChildren().clear();
+            subtitle.forward(newTime);
+            blockPositionChange.set(false);
+        }
+    }
+
+    private void handleChangePosition(float position) {
+        if (blockPositionChange.compareAndSet(false, true)) {
+            embeddedMediaPlayer.controls().setPosition(position);
             textFlow1.getChildren().clear();
             textFlow2.getChildren().clear();
             subtitle.changePosition(embeddedMediaPlayer.status().time());
@@ -184,8 +238,24 @@ public class PlayerController implements Initializable {
         }
     }
 
+    private void setPositionFromTimeSliderValue(double sliderValue) {
+        float position = (float) sliderValue / 100;
+        handleChangePosition(position);
+
+        PlayerMessageDto playerMessage = new PlayerMessageDto();
+        playerMessage.setMessageType(PlayerMessageType.CHANGE_POSITION);
+        playerMessage.setPayload(position);
+        sendMessage(playerMessage);
+    }
+
     private void setTimeSliderValueFromPosition(float position) {
         timeSlider.setValue(position * 100);
+    }
+
+    private void sendMessage(PlayerMessageDto playerMessage) {
+        if (stompSession != null) {
+            stompSession.send("/app/screening-room/" + duoWatchRequestDto.getId(), playerMessage);
+        }
     }
 
     private void toggleControlBars() {
@@ -217,6 +287,8 @@ public class PlayerController implements Initializable {
             imageViewStackPane.setMaxWidth(imageViewStackPane.getWidth() - 500);
             imageViewStackPane.setMinWidth(imageViewStackPane.getWidth() - 500);
             wordPanel.setPrefWidth(500);
+            wordPanel.setMaxWidth(500);
+            wordPanel.setMaxWidth(500);
             wordPanelShown = true;
         }
     }
@@ -230,27 +302,68 @@ public class PlayerController implements Initializable {
             imageViewStackPane.setMaxWidth(imageViewStackPane.getWidth() + 500);
             imageViewStackPane.setMinWidth(imageViewStackPane.getWidth() + 500);
             wordPanel.setPrefWidth(0);
+            wordPanel.setMaxWidth(0);
+            wordPanel.setMaxWidth(0);
             wordPanelShown = false;
         }
     }
 
-    public void fill(VideoContentDetailsDto.VideoContentLocDto videoContentLocDto, SubtitleDto subtitleDto, Scene scene) {
+    public void fill(PersonalDuoWatchRequestDto duoWatchRequestDto,
+                     UUID videoContentLocId,
+                     UUID subtitleId,
+                     LanguageDto videoContentLanguage,
+                     LanguageDto secondLanguage,
+                     Scene scene) {
         try {
-            this.videoContentLocDto = videoContentLocDto;
-            this.subtitleDto = subtitleDto;
-            this.subtitle = linguaClient.getSubtitle(subtitleDto.getId().toString()).get();
+            if (duoWatchRequestDto != null) {
+                prepareForDuoWatch(duoWatchRequestDto);
+            }
 
-            scene.setOnKeyPressed(keyEvent -> {
+            this.videoContentLanguage = videoContentLanguage;
+            this.secondLanguage = secondLanguage;
+            this.subtitle = linguaClient.getSubtitle(subtitleId).get();
+
+            this.scene = scene;
+            this.sceneKeyPressedHandler = (EventHandler<KeyEvent>) keyEvent -> {
                 switch (keyEvent.getCode()) {
                     case ESCAPE -> toggleControlBars();
                     case W -> toggleWordPanel();
                 }
-            });
+            };
+            scene.setOnKeyPressed(sceneKeyPressedHandler);
 
-            linguaClient.playVideoContent(embeddedMediaPlayer, videoContentLocDto.getId().toString());
+            linguaClient.playVideoContent(embeddedMediaPlayer, videoContentLocId);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void prepareForDuoWatch(PersonalDuoWatchRequestDto duoWatchRequestDto) {
+        this.duoWatchRequestDto = duoWatchRequestDto;
+        this.stompSession = linguaClient.connectWebSocket();
+
+        String playerStateDestination = "/private/reply/screening-room/" + duoWatchRequestDto.getId();
+        stompSession.subscribe(playerStateDestination, new StompSessionHandlerAdapter() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return PlayerMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                log.info("Received " + payload);
+                PlayerMessageDto playerMessage = (PlayerMessageDto) payload;
+                Platform.runLater(() -> {
+                    switch (playerMessage.getMessageType()) {
+                        case BACK -> handleBack();
+                        case TOGGLE -> handleToggle();
+                        case FORWARD -> handleForward();
+                        case CHANGE_POSITION ->
+                                handleChangePosition(((Double) playerMessage.getPayload()).floatValue());
+                    }
+                });
+            }
+        });
     }
 
     private class MediaPlayerEventListener extends MediaPlayerEventAdapter {
@@ -328,7 +441,7 @@ public class PlayerController implements Initializable {
             Text text = new Text(s);
             text.setStyle("-fx-fill: red; -fx-font-size: 24");
             if (interactive) {
-                text.setOnMouseClicked(mouseEvent -> dictionaryClient.lookup(s, videoContentLocDto.getLanguage().getTag(), subtitleDto.getSecondLanguage().getTag())
+                text.setOnMouseClicked(mouseEvent -> dictionaryClient.lookup(s, videoContentLanguage.getTag(), secondLanguage.getTag())
                         .thenAcceptAsync(dicResultDto -> Platform.runLater(() -> {
                             wordPanelController.fill(dicResultDto);
                             showWordPanel();

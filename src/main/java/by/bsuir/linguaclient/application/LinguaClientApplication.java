@@ -10,10 +10,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 public class LinguaClientApplication extends Application {
 
+    private static LinguaClientApplication instance;
     private ConfigurableApplicationContext applicationContext;
 
     @Override
     public void init() {
+        instance = this;
         applicationContext = new SpringApplicationBuilder()
                 .sources(ApplicationLauncher.class)
                 .run();
@@ -28,5 +30,9 @@ public class LinguaClientApplication extends Application {
     public void stop() {
         applicationContext.close();
         Platform.exit();
+    }
+
+    public static LinguaClientApplication getInstance() {
+        return instance;
     }
 }

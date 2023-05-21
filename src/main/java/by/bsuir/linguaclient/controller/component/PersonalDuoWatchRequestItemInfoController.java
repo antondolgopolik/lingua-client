@@ -1,33 +1,29 @@
 package by.bsuir.linguaclient.controller.component;
 
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
-import by.bsuir.linguaclient.dto.lingua.DuoWatchRequestCatalogItemDto;
+import by.bsuir.linguaclient.application.LinguaClientApplication;
 import by.bsuir.linguaclient.dto.lingua.GenreDto;
+import by.bsuir.linguaclient.dto.lingua.PersonalDuoWatchRequestDto;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
-import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 
 @Component
 @Scope("prototype")
-@FxmlView("/fxml/DuoWatchRequestCatalogItemView.fxml")
+@FxmlView("/fxml/PersonalDuoWatchRequestItemInfoView.fxml")
 @Slf4j
-public class DuoWatchRequestCatalogItemController implements Initializable {
+public class PersonalDuoWatchRequestItemInfoController {
 
     @FXML
     private StackPane posterStackPane;
@@ -44,41 +40,20 @@ public class DuoWatchRequestCatalogItemController implements Initializable {
     @FXML
     private Label secondLangLabel;
     @FXML
-    private Button acceptButton;
+    private Label statusLabel;
+    @FXML
+    private HBox partnerHBox;
+    @FXML
+    private Hyperlink partnerHyperlink;
 
-    private final FxWeaver fxWeaver;
     private final LinguaClient linguaClient;
 
-    private DuoWatchRequestCatalogItemDto duoWatchRequestCatalogItemDto;
-
-    public DuoWatchRequestCatalogItemController(FxWeaver fxWeaver,
-                                                LinguaClient linguaClient) {
-        this.fxWeaver = fxWeaver;
+    public PersonalDuoWatchRequestItemInfoController(LinguaClient linguaClient) {
         this.linguaClient = linguaClient;
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        acceptButton.setOnAction(event -> {
-            acceptButton.setDisable(true);
-            try {
-                boolean success = linguaClient.acceptDuoWatchRequest(duoWatchRequestCatalogItemDto.getId()).get();
-                Alert alert;
-                if (success) {
-                    alert = new Alert(Alert.AlertType.INFORMATION, "Duo Watch Response was successfully created", ButtonType.OK);
-                } else {
-                    alert = new Alert(Alert.AlertType.WARNING, "Duo Watch Response wasn't created", ButtonType.OK);
-                }
-                alert.showAndWait();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    public void fill(DuoWatchRequestCatalogItemDto duoWatchRequestCatalogItemDto) {
-        this.duoWatchRequestCatalogItemDto = duoWatchRequestCatalogItemDto;
-        var videoContentLocDto = duoWatchRequestCatalogItemDto.getVideoContentLocDto();
+    public void fill(PersonalDuoWatchRequestDto personalDuoWatchRequestDto) {
+        var videoContentLocDto = personalDuoWatchRequestDto.getVideoContentLocDto();
         var catalogItemDto = videoContentLocDto.getCatalogItemDto();
         posterImageView.fitWidthProperty().bind(posterStackPane.widthProperty());
         posterImageView.fitHeightProperty().bind(posterStackPane.heightProperty());
@@ -87,7 +62,18 @@ public class DuoWatchRequestCatalogItemController implements Initializable {
         viewsLabel.setText("Views: " + catalogItemDto.getViews());
         genresLabel.setText(buildGenresString(catalogItemDto.getGenres()));
         videoContentLangLabel.setText("Video content language: " + videoContentLocDto.getLanguage().getName());
-        secondLangLabel.setText("Second language: " + duoWatchRequestCatalogItemDto.getSecondLanguage().getName());
+        secondLangLabel.setText("Second language: " + personalDuoWatchRequestDto.getSecondLanguage().getName());
+        statusLabel.setText("Status: " + personalDuoWatchRequestDto.getStatus());
+        if (personalDuoWatchRequestDto.getPartnerTgUsername() != null) {
+            String uri = "https://t.me/" + personalDuoWatchRequestDto.getPartnerTgUsername();
+            partnerHyperlink.setText(uri);
+            partnerHyperlink.setOnAction(event -> {
+                HostServices hostServices = LinguaClientApplication.getInstance().getHostServices();
+                hostServices.showDocument(uri);
+            });
+        } else {
+            partnerHBox.setVisible(false);
+        }
     }
 
     private String buildGenresString(List<GenreDto> genres) {

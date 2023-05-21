@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -40,6 +41,10 @@ public class CatalogItemController implements Initializable {
     private Label viewsLabel;
     @FXML
     private Label genresLabel;
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label shortDescriptionLabel;
     @FXML
     private Button goToDetailsButton;
 
@@ -70,10 +75,17 @@ public class CatalogItemController implements Initializable {
         posterImageView.fitWidthProperty().bind(posterStackPane.widthProperty());
         posterImageView.fitHeightProperty().bind(posterStackPane.heightProperty());
         linguaClient.getImage(catalogItemDto.getId()).thenAcceptAsync(image -> Platform.runLater(() -> posterImageView.setImage(image)));
-        durationLabel.setText("Duration: " + catalogItemDto.getDuration());
+        durationLabel.setText("Duration: " + buildDuration(catalogItemDto.getDuration()));
         viewsLabel.setText("Views: " + catalogItemDto.getViews());
         genresLabel.setText(buildGenresString(catalogItemDto.getGenres()));
-        goToDetailsButton.setText(catalogItemDto.getName());
+        nameLabel.setText(catalogItemDto.getName());
+        shortDescriptionLabel.setText(catalogItemDto.getShortDescription());
+    }
+
+    private String buildDuration(Integer duration) {
+        long h = duration / 60;
+        long m = duration % 60;
+        return String.format("%dh %dm", h, m);
     }
 
     private String buildGenresString(List<GenreDto> genres) {

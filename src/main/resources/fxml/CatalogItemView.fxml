@@ -10,16 +10,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER_LEFT" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.CatalogItemController">
+<HBox spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.CatalogItemController">
    <children>
-      <StackPane fx:id="posterStackPane" prefHeight="400.0" prefWidth="250.0">
+      <StackPane fx:id="posterStackPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="250.0" HBox.hgrow="NEVER">
          <children>
             <ImageView fx:id="posterImageView" fitHeight="300.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
          </children>
       </StackPane>
-      <VBox prefWidth="300.0" spacing="15.0">
+      <VBox minWidth="-Infinity" prefWidth="300.0" spacing="15.0" HBox.hgrow="NEVER">
          <HBox.margin>
-            <Insets left="15.0" />
+            <Insets />
          </HBox.margin>
          <children>
             <Label fx:id="durationLabel" text="Duration: " />
@@ -32,13 +32,24 @@
             <Insets bottom="15.0" top="15.0" />
          </padding>
       </VBox>
-      <Button fx:id="goToDetailsButton" mnemonicParsing="false" prefWidth="800.0" text="Video content name">
-         <font>
-            <Font size="18.0" />
-         </font>
-         <HBox.margin>
-            <Insets left="15.0" />
-         </HBox.margin>
-      </Button>
+      <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+         <children>
+            <Label fx:id="nameLabel" text="Video content name">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="shortDescriptionLabel" text="Short description" textAlignment="JUSTIFY" wrapText="true">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="goToDetailsButton" mnemonicParsing="false" text="Go to details">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
    </children>
 </HBox>

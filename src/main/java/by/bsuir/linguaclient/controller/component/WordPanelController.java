@@ -5,8 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
@@ -26,13 +28,18 @@ public class WordPanelController implements Initializable {
     @FXML
     private VBox rootVBox;
     @FXML
+    private HBox topBarHBox;
+    @FXML
     private Button addToDictionaryButton;
+    @FXML
+    private ChoiceBox<String> dictionaryChoiceBox;
     @FXML
     private TreeView<String> wordTreeView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        topBarHBox.setStyle("-fx-background-color: white");
+        dictionaryChoiceBox.getItems().addAll("Dictionary 1", "Dictionary 2", "Dictionary 3");
     }
 
     public void fill(DicResultDto dicResultDto) {

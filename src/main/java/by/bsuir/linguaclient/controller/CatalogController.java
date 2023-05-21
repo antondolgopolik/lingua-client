@@ -3,6 +3,8 @@ package by.bsuir.linguaclient.controller;
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import by.bsuir.linguaclient.controller.component.CatalogItemPageController;
 import by.bsuir.linguaclient.dto.lingua.CatalogItemPageDto;
+import by.bsuir.linguaclient.dto.lingua.PlayerMessageDto;
+import by.bsuir.linguaclient.dto.lingua.PlayerMessageType;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -13,15 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Component
 @Scope("prototype")
@@ -32,9 +32,9 @@ public class CatalogController implements Initializable {
     @FXML
     private MenuButton menuButton;
     @FXML
-    private MenuItem duoWatchRequestsMenuItem;
-    @FXML
     private MenuItem dictionariesMenuItem;
+    @FXML
+    private MenuItem personalDuoWatchRequestsMenuItem;
     @FXML
     private MenuItem exploreDuoWatchRequestsMenuItem;
     @FXML
@@ -57,6 +57,8 @@ public class CatalogController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        dictionariesMenuItem.setOnAction(event -> menuButton.getScene().setRoot(fxWeaver.loadView(DictionaryListController.class)));
+        personalDuoWatchRequestsMenuItem.setOnAction(event -> menuButton.getScene().setRoot(fxWeaver.loadView(PersonalDuoWatchRequestController.class)));
         exploreDuoWatchRequestsMenuItem.setOnAction(event -> menuButton.getScene().setRoot(fxWeaver.loadView(DuoWatchRequestCatalogController.class)));
         logOutMenuItem.setOnAction(event -> {
             linguaClient.logOut();
@@ -72,15 +74,21 @@ public class CatalogController implements Initializable {
 
     private Node searchPageFactory(String searchQuery, Integer page) {
         try {
-            CatalogItemPageDto catalogItemPageDto = linguaClient.catalogSearch(
+            CatalogItemPageDto pageDto = linguaClient.catalogSearch(
                     searchQuery,
                     page, 15
             ).get();
 
-            catalogItemPagination.setPageCount(catalogItemPageDto.getTotalPages());
+            Integer totalPages = pageDto.getTotalPages();
+            if (totalPages != 0) {
+                catalogItemPagination.setVisible(true);
+                catalogItemPagination.setPageCount(totalPages);
+            } else {
+                catalogItemPagination.setVisible(false);
+            }
 
             FxControllerAndView<CatalogItemPageController, Node> controllerAndView = fxWeaver.load(CatalogItemPageController.class);
-            controllerAndView.getController().fill(catalogItemPageDto.getCatalogItemDtos());
+            controllerAndView.getController().fill(pageDto.getCatalogItemDtos());
             return controllerAndView.getView().orElseThrow();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);

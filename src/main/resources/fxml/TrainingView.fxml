@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.TrainingController">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0">
+            <children>
+                <Button fx:id="backToDictionaryButton" mnemonicParsing="false" text="Back to dictionary" />
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+        </HBox>
+      <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+         <children>
+            <StackPane prefHeight="50.0">
+               <children>
+                  <Label fx:id="questionLabel" text="Привет">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+               <children>
+                  <TextField fx:id="answerTextField" prefWidth="500.0" promptText="Enter your answer">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextField>
+                  <Button fx:id="checkButton" mnemonicParsing="false" text="Check" />
+               </children>
+            </HBox>
+            <StackPane prefHeight="50.0" />
+         </children>
+      </VBox>
+    </children>
+</VBox>

@@ -51,6 +51,6 @@ public class WatchDialogController extends Dialog<Pair<VideoContentDetailsDto.Vi
     }
 
     public void setVideoContentDetailsDto(VideoContentDetailsDto videoContentDetailsDto) {
-        firstLanguageChoiceBox.setItems(FXCollections.observableList(videoContentDetailsDto.getVideoContentLocDtos()));
+        firstLanguageChoiceBox.getItems().addAll(videoContentDetailsDto.getVideoContentLocDtos());
     }
 }

@@ -4,6 +4,7 @@ import by.bsuir.linguaclient.dto.lingua.*;
 import by.bsuir.linguaclient.exception.UnauthorizedException;
 import by.bsuir.linguaclient.subtitle.Subtitle;
 import by.bsuir.linguaclient.subtitle.SubtitleParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -15,12 +16,20 @@ import org.asynchttpclient.*;
 import org.asynchttpclient.filter.FilterContext;
 import org.asynchttpclient.util.HttpConstants;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.prefs.Preferences;
@@ -43,8 +52,13 @@ public class LinguaClient {
     private final String videoContentApiUri;
     private final String createDuoWatchRequestApiUri;
     private final String duoWatchRequestCatalogSearchApiUri;
+    private final String duoWatchRequestPersonalSearchApiUri;
     private final String acceptDuoWatchRequestApiUri;
     private final String allLanguagesApiUri;
+    private final String subtitleApiUri;
+    private final String dictionariesApiUri;
+    private final String addDictionaryApiUri;
+    private final String trainingsApiUri;
 
     private final String pictureUri;
     private final String videoContentUri;
@@ -59,8 +73,13 @@ public class LinguaClient {
                         @Value("${app.uri.lingua.api.videocontent.details}") String videoContentApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.create}") String createDuoWatchRequestApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.catalog.search}") String duoWatchRequestCatalogSearchApiUri,
+                        @Value("${app.uri.lingua.api.duo-watch-request.personal.search}") String duoWatchRequestPersonalSearchApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.accept}") String acceptDuoWatchRequestApiUri,
                         @Value("${app.uri.lingua.api.language.all}") String allLanguagesApiUri,
+                        @Value("${app.uri.lingua.api.subtitle}") String subtitleApiUri,
+                        @Value("${app.uri.lingua.api.dictionaries}") String dictionariesApiUri,
+                        @Value("${app.uri.lingua.api.dictionaries.add}") String addDictionaryApiUri,
+                        @Value("${app.uri.lingua.api.trainings}") String trainingsApiUri,
                         @Value("${app.uri.lingua.picture}") String pictureUri,
                         @Value("${app.uri.lingua.videocontent}") String videoContentUri,
                         @Value("${app.uri.lingua.subtitle}") String subtitleUri) {
@@ -77,8 +96,13 @@ public class LinguaClient {
         this.videoContentApiUri = videoContentApiUri;
         this.createDuoWatchRequestApiUri = createDuoWatchRequestApiUri;
         this.duoWatchRequestCatalogSearchApiUri = duoWatchRequestCatalogSearchApiUri;
+        this.duoWatchRequestPersonalSearchApiUri = duoWatchRequestPersonalSearchApiUri;
         this.acceptDuoWatchRequestApiUri = acceptDuoWatchRequestApiUri;
         this.allLanguagesApiUri = allLanguagesApiUri;
+        this.subtitleApiUri = subtitleApiUri;
+        this.dictionariesApiUri = dictionariesApiUri;
+        this.addDictionaryApiUri = addDictionaryApiUri;
+        this.trainingsApiUri = trainingsApiUri;
         this.pictureUri = pictureUri;
         this.videoContentUri = videoContentUri;
         this.subtitleUri = subtitleUri;
@@ -264,6 +288,37 @@ public class LinguaClient {
         }
     }
 
+    public CompletableFuture<PersonalDuoWatchRequestPageDto> duoWatchRequestPersonalSearch(String name,
+                                                                                           Boolean owner,
+                                                                                           DuoWatchRequestStatus status,
+                                                                                           Integer page,
+                                                                                           Integer pageSize) {
+        BoundRequestBuilder requestBuilder = httpClient.prepareGet(duoWatchRequestPersonalSearchApiUri);
+        if (name != null) {
+            requestBuilder.addQueryParam("q", name);
+        }
+        requestBuilder.addQueryParam("owner", owner.toString());
+        if (status != null) {
+            requestBuilder.addQueryParam("status", status.toString());
+        }
+        if (page != null) {
+            requestBuilder.addQueryParam("p", page.toString());
+        }
+        if (pageSize != null) {
+            requestBuilder.addQueryParam("s", pageSize.toString());
+        }
+        return requestBuilder.execute().toCompletableFuture().handleAsync(this::mapResponseToDPersonalDuoWatchRequestPageDto);
+    }
+
+    private PersonalDuoWatchRequestPageDto mapResponseToDPersonalDuoWatchRequestPageDto(Response response, Throwable throwable) {
+        try {
+            String json = response.getResponseBody();
+            return objectMapper.readValue(json, PersonalDuoWatchRequestPageDto.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public CompletableFuture<List<LanguageDto>> getAllLanguages() {
         return httpClient.prepareGet(allLanguagesApiUri)
                 .execute().toCompletableFuture().handleAsync(this::mapResponseToLanguages);
@@ -289,6 +344,71 @@ public class LinguaClient {
         return response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200;
     }
 
+    public CompletableFuture<List<DictionaryDto>> getDictionariesDtos() {
+        return httpClient.prepareGet(dictionariesApiUri)
+                .execute().toCompletableFuture().handleAsync(this::mapResponseToDictionariesDto);
+    }
+
+    private List<DictionaryDto> mapResponseToDictionariesDto(Response response, Throwable throwable) {
+        try {
+            String json = response.getResponseBody();
+            return objectMapper.readValue(json, new TypeReference<>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CompletableFuture<List<DictionaryWordDto>> getDictionaryWordDtos(Long dictionaryId) {
+        return httpClient.prepareGet(dictionariesApiUri + "/" + dictionaryId)
+                .execute().toCompletableFuture().handleAsync(this::mapResponseToDictionaryWordDtos);
+    }
+
+    private List<DictionaryWordDto> mapResponseToDictionaryWordDtos(Response response, Throwable throwable) {
+        try {
+            String json = response.getResponseBody();
+            return objectMapper.readValue(json, new TypeReference<>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CompletableFuture<SubtitleDto> getSubtitleDto(UUID videoContentLocId, Long languageId) {
+        return httpClient.prepareGet(subtitleApiUri)
+                .addQueryParam("videoContentLocId", videoContentLocId.toString())
+                .addQueryParam("languageId", languageId.toString())
+                .execute().toCompletableFuture().handleAsync(this::mapResponseToSubtitleDto);
+    }
+
+    private SubtitleDto mapResponseToSubtitleDto(Response response, Throwable throwable) {
+        try {
+            String json = response.getResponseBody();
+            return objectMapper.readValue(json, SubtitleDto.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CompletableFuture<List<DictionaryWordDto>> getTraining(Long dictionaryId,
+                                                                   Integer size) {
+        return httpClient.prepareGet(trainingsApiUri + "/" + dictionaryId)
+                .addQueryParam("size", size.toString())
+                .execute().toCompletableFuture().handleAsync(this::mapResponseToDictionaryWordDtos);
+    }
+
+    public CompletableFuture<Boolean> saveTrainingAnswers(Long dictionaryId,
+                                                           List<TrainingAnswerDto> trainingAnswerDtos) {
+        try {
+            String body = objectMapper.writeValueAsString(trainingAnswerDtos);
+            return httpClient.preparePost(trainingsApiUri + "/" + dictionaryId + "/answers")
+                    .setBody(body)
+                    .execute().toCompletableFuture().handleAsync((response, throwable) -> response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public CompletableFuture<Image> getImage(String imageId) {
         return httpClient.prepareGet(pictureUri + imageId)
                 .execute().toCompletableFuture().handleAsync(this::mapResponseToImage);
@@ -298,14 +418,27 @@ public class LinguaClient {
         return new Image(response.getResponseBodyAsStream());
     }
 
-    public void playVideoContent(EmbeddedMediaPlayer embeddedMediaPlayer, String videoContentId) {
+    public void playVideoContent(EmbeddedMediaPlayer embeddedMediaPlayer, UUID videoContentId) {
         tokenReadWriteLock.readLock().lock();
         String uri = videoContentUri + videoContentId + "?token=" + token;
         tokenReadWriteLock.readLock().unlock();
         embeddedMediaPlayer.media().play(uri);
     }
 
-    public CompletableFuture<Subtitle> getSubtitle(String subtitleId) {
+    public StompSession connectWebSocket() {
+        WebSocketStompClient client = new WebSocketStompClient(new StandardWebSocketClient());
+        client.setMessageConverter(new MappingJackson2MessageConverter());
+        WebSocketHttpHeaders webSocketHttpHeaders = new WebSocketHttpHeaders();
+        webSocketHttpHeaders.add("Authorization", "Bearer " + token);
+        try {
+            return client.connectAsync("ws://lingua.com:8080/ws", webSocketHttpHeaders, new StompSessionHandlerAdapter() {
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CompletableFuture<Subtitle> getSubtitle(UUID subtitleId) {
         BoundRequestBuilder requestBuilder = httpClient.prepareGet(subtitleUri + subtitleId);
         tokenReadWriteLock.readLock().lock();
         requestBuilder.addQueryParam("token", token);

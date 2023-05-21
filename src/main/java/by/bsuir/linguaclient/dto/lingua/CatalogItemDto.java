@@ -8,6 +8,7 @@ import java.util.List;
 public class CatalogItemDto {
     private String id;
     private String name;
+    private String shortDescription;
     private Integer duration;
     private Long views;
     private List<GenreDto> genres;

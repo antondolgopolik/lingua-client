@@ -39,7 +39,8 @@ public class StageReadyHandler implements ApplicationListener<StageReadyEvent> {
         stage.setScene(scene);
 
         stage.setTitle(applicationTitle);
-        stage.setMaximized(true);
+//        stage.setMaximized(true);
+        stage.setFullScreen(true);
         stage.show();
     }
 }

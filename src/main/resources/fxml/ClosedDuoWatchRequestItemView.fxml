@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox alignment="CENTER_LEFT" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.ClosedDuoWatchRequestItemController">
+    <children>
+        <fx:include fx:id="personalDuoWatchRequestItemInfo" source="PersonalDuoWatchRequestItemInfoView.fxml" />
+        <VBox fx:id="actionVBox" alignment="CENTER_LEFT" spacing="15.0" />
+    </children>
+</HBox>

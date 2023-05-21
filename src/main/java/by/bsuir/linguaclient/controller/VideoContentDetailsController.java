@@ -4,6 +4,7 @@ import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import by.bsuir.linguaclient.controller.dialog.WatchDialogController;
 import by.bsuir.linguaclient.dto.lingua.CreateDuoWatchRequestFormDto;
 import by.bsuir.linguaclient.dto.lingua.GenreDto;
+import by.bsuir.linguaclient.dto.lingua.SubtitleDto;
 import by.bsuir.linguaclient.dto.lingua.VideoContentDetailsDto;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -33,7 +35,7 @@ import java.util.concurrent.ExecutionException;
 public class VideoContentDetailsController implements Initializable {
 
     @FXML
-    private Button menuButton;
+    private Button backToCatalogButton;
     @FXML
     private Label nameLabel;
     @FXML
@@ -68,13 +70,13 @@ public class VideoContentDetailsController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        menuButton.setOnAction(this::menuButtonActionHandler);
+        backToCatalogButton.setOnAction(this::menuButtonActionHandler);
         watchButton.setOnAction(this::watchButtonActionHandler);
         duoWatchButton.setOnAction(this::duoWatchButtonActionHandler);
     }
 
     private void menuButtonActionHandler(ActionEvent event) {
-        menuButton.getScene().setRoot(fxWeaver.loadView(CatalogController.class));
+        backToCatalogButton.getScene().setRoot(fxWeaver.loadView(CatalogController.class));
     }
 
     private void watchButtonActionHandler(ActionEvent event) {
@@ -83,7 +85,14 @@ public class VideoContentDetailsController implements Initializable {
         watchDialogController.showAndWait().ifPresent(result -> {
             FxControllerAndView<PlayerController, Parent> controllerAndView = fxWeaver.load(PlayerController.class);
             PlayerController playerController = controllerAndView.getController();
-            playerController.fill(result.getKey(), result.getValue(), watchButton.getScene());
+            var videoContentLocDto = result.getKey();
+            var subtitleDto = result.getValue();
+            playerController.fill(
+                    null,
+                    videoContentLocDto.getId(), subtitleDto.getId(),
+                    videoContentLocDto.getLanguage(),
+                    subtitleDto.getSecondLanguage(), watchButton.getScene()
+            );
             watchButton.getScene().setRoot(controllerAndView.getView().orElseThrow());
         });
     }

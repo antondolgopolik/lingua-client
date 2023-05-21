@@ -16,8 +16,8 @@
          <children>
             <MenuButton fx:id="menuButton" mnemonicParsing="false" text="Menu">
               <items>
-                <MenuItem fx:id="duoWatchRequestsMenuItem" mnemonicParsing="false" text="Duo Watch requests" />
                   <MenuItem fx:id="dictionariesMenuItem" mnemonicParsing="false" text="Dictionaries" />
+                <MenuItem fx:id="personalDuoWatchRequestsMenuItem" mnemonicParsing="false" text="Personal Duo Watch requests" />
                 <MenuItem fx:id="exploreDuoWatchRequestsMenuItem" mnemonicParsing="false" text="Explore Duo Watch requests" />
                   <MenuItem fx:id="logOutMenuItem" mnemonicParsing="false" text="Log out" />
               </items>

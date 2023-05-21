@@ -77,7 +77,13 @@ public class DuoWatchRequestCatalogController implements Initializable {
                     page, 15
             ).get();
 
-            catalogItemPagination.setPageCount(pageDto.getTotalPages());
+            Integer totalPages = pageDto.getTotalPages();
+            if (totalPages != 0) {
+                catalogItemPagination.setVisible(true);
+                catalogItemPagination.setPageCount(totalPages);
+            } else {
+                catalogItemPagination.setVisible(false);
+            }
 
             FxControllerAndView<DuoWatchRequestCatalogItemPageController, Node> controllerAndView = fxWeaver.load(DuoWatchRequestCatalogItemPageController.class);
             controllerAndView.getController().fill(pageDto.getDuoWatchRequestCatalogItemDtos());
