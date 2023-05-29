@@ -6,6 +6,7 @@ import by.bsuir.linguaclient.dto.lingua.CreateDuoWatchRequestFormDto;
 import by.bsuir.linguaclient.dto.lingua.GenreDto;
 import by.bsuir.linguaclient.dto.lingua.SubtitleDto;
 import by.bsuir.linguaclient.dto.lingua.VideoContentDetailsDto;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,6 +17,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
@@ -41,6 +43,8 @@ public class VideoContentDetailsController implements Initializable {
     @FXML
     private Label descriptionLabel;
     @FXML
+    private StackPane posterStackPane;
+    @FXML
     private ImageView posterImageView;
     @FXML
     private Label durationLabel;
@@ -56,16 +60,12 @@ public class VideoContentDetailsController implements Initializable {
     private final FxWeaver fxWeaver;
     private final LinguaClient linguaClient;
 
-    private final String pictureUri;
-
     private VideoContentDetailsDto videoContentDetailsDto;
 
     public VideoContentDetailsController(FxWeaver fxWeaver,
-                                         LinguaClient linguaClient,
-                                         @Value("${app.uri.lingua.picture}") String pictureUri) {
+                                         LinguaClient linguaClient) {
         this.fxWeaver = fxWeaver;
         this.linguaClient = linguaClient;
-        this.pictureUri = pictureUri;
     }
 
     @Override
@@ -119,12 +119,13 @@ public class VideoContentDetailsController implements Initializable {
         });
     }
 
-    public void fill(String videoContentId) {
+    public void fill(UUID videoContentId) {
         try {
             this.videoContentDetailsDto = linguaClient.getVideoContentDetails(videoContentId).get();
             nameLabel.setText(videoContentDetailsDto.getName());
             descriptionLabel.setText(videoContentDetailsDto.getDescription());
-            posterImageView.setImage(new Image(pictureUri + videoContentDetailsDto.getId()));
+            posterImageView.fitHeightProperty().bind(posterStackPane.heightProperty());
+            posterImageView.setImage(linguaClient.getImage(videoContentDetailsDto.getId(), 0, 400));
             durationLabel.setText("Duration: " + videoContentDetailsDto.getDuration());
             viewsLabel.setText("Views: " + videoContentDetailsDto.getViews());
             genresLabel.setText(buildGenresString(videoContentDetailsDto.getGenres()));

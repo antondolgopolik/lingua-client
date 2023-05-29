@@ -10,23 +10,20 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.CatalogItemController">
+<HBox spacing="15.0" stylesheets="@../css/CatalogItemViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.CatalogItemController">
    <children>
       <StackPane fx:id="posterStackPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="250.0" HBox.hgrow="NEVER">
          <children>
             <ImageView fx:id="posterImageView" fitHeight="300.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
          </children>
       </StackPane>
-      <VBox minWidth="-Infinity" prefWidth="300.0" spacing="15.0" HBox.hgrow="NEVER">
-         <HBox.margin>
-            <Insets />
-         </HBox.margin>
+      <VBox minWidth="-Infinity" prefWidth="250.0" spacing="15.0" HBox.hgrow="NEVER">
          <children>
-            <Label fx:id="durationLabel" text="Duration: " />
+            <Label fx:id="durationLabel" styleClass="info-label" text="Duration: " />
             <Separator prefWidth="200.0" />
-            <Label fx:id="viewsLabel" text="Views: " />
+            <Label fx:id="viewsLabel" styleClass="info-label" text="Views: " />
             <Separator prefWidth="200.0" />
-            <Label fx:id="genresLabel" text="Genres: " wrapText="true" />
+            <Label fx:id="genresLabel" styleClass="info-label" text="Genres: " wrapText="true" />
          </children>
          <padding>
             <Insets bottom="15.0" top="15.0" />
@@ -34,16 +31,8 @@
       </VBox>
       <VBox spacing="15.0" HBox.hgrow="ALWAYS">
          <children>
-            <Label fx:id="nameLabel" text="Video content name">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Label>
-            <Label fx:id="shortDescriptionLabel" text="Short description" textAlignment="JUSTIFY" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
+            <Label fx:id="nameLabel" styleClass="title-label" text="Video content name" />
+            <Label fx:id="shortDescriptionLabel" styleClass="description-label" text="Short description" textAlignment="JUSTIFY" wrapText="true" />
             <Button fx:id="goToDetailsButton" mnemonicParsing="false" text="Go to details">
                <font>
                   <Font size="18.0" />

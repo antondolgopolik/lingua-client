@@ -3,7 +3,9 @@ package by.bsuir.linguaclient.controller;
 import by.bsuir.linguaclient.api.dictionary.DictionaryClient;
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import by.bsuir.linguaclient.configuration.ResourceHolder;
+import by.bsuir.linguaclient.controller.component.AbstractWordPanelController;
 import by.bsuir.linguaclient.controller.component.WordPanelController;
+import by.bsuir.linguaclient.controller.component.WordPanelWithChatController;
 import by.bsuir.linguaclient.dto.lingua.LanguageDto;
 import by.bsuir.linguaclient.dto.lingua.PersonalDuoWatchRequestDto;
 import by.bsuir.linguaclient.dto.lingua.PlayerMessageDto;
@@ -15,6 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,12 +26,11 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import lombok.extern.slf4j.Slf4j;
+import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.context.annotation.Scope;
@@ -54,6 +56,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class PlayerController implements Initializable {
 
+    @FXML
+    private StackPane rootStackPane;
     @FXML
     private VBox playerVBox;
     @FXML
@@ -95,10 +99,8 @@ public class PlayerController implements Initializable {
     @FXML
     private Slider soundSlider;
 
-    @FXML
-    private WordPanelController wordPanelController;
-    @FXML
-    private VBox wordPanel;
+    private AbstractWordPanelController wordPanelController;
+    private Region wordPanel;
 
     private final FxWeaver fxWeaver;
     private final LinguaClient linguaClient;
@@ -316,8 +318,23 @@ public class PlayerController implements Initializable {
                      Scene scene) {
         try {
             if (duoWatchRequestDto != null) {
+                FxControllerAndView<WordPanelWithChatController, Region> controllerAndView = fxWeaver.load(WordPanelWithChatController.class);
+                WordPanelWithChatController wordPanelWithChatController = controllerAndView.getController();
+                wordPanelController = wordPanelWithChatController;
+                wordPanel = controllerAndView.getView().orElseThrow();
+
                 prepareForDuoWatch(duoWatchRequestDto);
+                wordPanelWithChatController.fill(linguaClient.getUsername(), this::sendChatMessage);
+            } else {
+                FxControllerAndView<WordPanelController, Region> controllerAndView = fxWeaver.load(WordPanelController.class);
+                wordPanelController = controllerAndView.getController();
+                wordPanel = controllerAndView.getView().orElseThrow();
             }
+            wordPanel.setPrefWidth(0);
+            wordPanel.setMaxWidth(Region.USE_PREF_SIZE);
+            wordPanel.setMinWidth(Region.USE_PREF_SIZE);
+            rootStackPane.getChildren().add(wordPanel);
+            StackPane.setAlignment(wordPanel, Pos.CENTER_RIGHT);
 
             this.videoContentLanguage = videoContentLanguage;
             this.secondLanguage = secondLanguage;
@@ -360,10 +377,22 @@ public class PlayerController implements Initializable {
                         case FORWARD -> handleForward();
                         case CHANGE_POSITION ->
                                 handleChangePosition(((Double) playerMessage.getPayload()).floatValue());
+                        case CHAT -> {
+                            var wordPanelWitchChatController = (WordPanelWithChatController) wordPanelController;
+                            var msg = (ArrayList<String>) playerMessage.getPayload();
+                            wordPanelWitchChatController.showMessage(msg.get(0), msg.get(1), false);
+                        }
                     }
                 });
             }
         });
+    }
+
+    private void sendChatMessage(String message) {
+        PlayerMessageDto playerMessage = new PlayerMessageDto();
+        playerMessage.setMessageType(PlayerMessageType.CHAT);
+        playerMessage.setPayload(new String[]{linguaClient.getUsername(), message});
+        sendMessage(playerMessage);
     }
 
     private class MediaPlayerEventListener extends MediaPlayerEventAdapter {
@@ -439,7 +468,7 @@ public class PlayerController implements Initializable {
 
         private Text strToText(String s, boolean interactive) {
             Text text = new Text(s);
-            text.setStyle("-fx-fill: red; -fx-font-size: 24");
+            text.getStyleClass().add("subtitle-text");
             if (interactive) {
                 text.setOnMouseClicked(mouseEvent -> dictionaryClient.lookup(s, videoContentLanguage.getTag(), secondLanguage.getTag())
                         .thenAcceptAsync(dicResultDto -> Platform.runLater(() -> {

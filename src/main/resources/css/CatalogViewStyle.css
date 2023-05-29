@@ -1,0 +1,143 @@
+@import "CommonStyles.css";
+
+.top-bar {
+    -fx-background-color: #6D9886;
+}
+
+.menu-button {
+    -fx-background-color: #393E46;
+}
+.menu-button .label {
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 16;
+}
+.menu-button .arrow {
+    -fx-font-size: 16;
+    -fx-background-color: #F7F7F7;
+}
+.menu-button .context-menu {
+    -fx-background-color: #F7F7F7;
+    -fx-border-color: #393E46;
+}
+.menu-button .context-menu .menu-item {
+    -fx-background-color: #F7F7F7;
+    -fx-text-fill: #393E46;
+}
+.menu-button .context-menu .menu-item .label {
+    -fx-text-fill: #393E46;
+}
+.menu-button .context-menu .menu-item:focused {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+}
+.menu-button .context-menu .menu-item:focused .label {
+    -fx-text-fill: #F7F7F7;
+}
+
+.search-text-field {
+    -fx-font-size: 18;
+    -fx-text-fill: #393E46;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 12;
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+}
+
+.sort-label {
+    -fx-font-size: 18;
+    -fx-text-fill: #393E46;
+}
+
+.sort-choice-box {
+    -fx-background-color: #393E46;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+.sort-choice-box .label {
+    -fx-text-fill: #F7F7F7;
+}
+.sort-choice-box .arrow {
+    -fx-font-size: 16;
+    -fx-background-color: #F7F7F7;
+}
+.sort-choice-box .context-menu {
+    -fx-background-color: #F7F7F7;
+    -fx-border-color: #393E46;
+}
+.sort-choice-box .context-menu .menu-item {
+    -fx-background-color: #F7F7F7;
+    -fx-text-fill: #393E46;
+}
+.sort-choice-box .context-menu .menu-item .label {
+    -fx-text-fill: #393E46;
+}
+.sort-choice-box .context-menu .menu-item:focused {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+}
+.sort-choice-box .context-menu .menu-item:focused .label {
+    -fx-text-fill: #F7F7F7;
+}
+
+.search-button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.scroll-pane {
+    -fx-background-color: #F7F7F7;
+}
+.scroll-pane .viewport {
+    -fx-background-color: #F7F7F7;
+}
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: #F7F7F7;
+}
+.scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-font-size: 18;
+    -fx-background-color: #393E46;
+}
+.scroll-pane .scroll-bar:vertical .decrement-button .decrement-arrow {
+    -fx-background-color: #F7F7F7;
+}
+.scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: #F7F7F7;
+}
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #393E46;
+}
+.scroll-pane .scroll-bar:vertical .increment-button {
+    -fx-font-size: 18;
+    -fx-background-color: #393E46;
+}
+.scroll-pane .scroll-bar:vertical .increment-button .increment-arrow {
+    -fx-background-color: #F7F7F7;
+}
+
+.pagination .pagination-control {
+    -fx-font-size: 14;
+}
+.pagination .pagination-control .left-arrow-button {
+    -fx-background-color: #393E46;
+}
+.pagination .pagination-control .left-arrow-button .left-arrow {
+    -fx-background-color: #F7F7F7;
+}
+.pagination .pagination-control .right-arrow-button {
+    -fx-background-color: #393E46;
+}
+.pagination .pagination-control .right-arrow-button .right-arrow {
+    -fx-background-color: #F7F7F7;
+}
+.pagination .pagination-control .number-button {
+    -fx-text-fill: #F7F7F7;
+    -fx-background-color: #393E46;
+    -fx-background-radius: 4;
+}
+.pagination .pagination-control .page-information {
+    -fx-text-fill: #393E46;
+}

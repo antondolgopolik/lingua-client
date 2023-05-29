@@ -72,7 +72,7 @@ public class DictionaryController implements Initializable {
                 try {
                     List<DictionaryWordDto> dictionaryWordDtos = linguaClient.getTraining(dictionaryDto.getId(), size).get();
                     FxControllerAndView<TrainingController, Parent> controllerAndView = fxWeaver.load(TrainingController.class);
-                    controllerAndView.getController().fill(dictionaryWordDtos.iterator());
+                    controllerAndView.getController().fill(dictionaryWordDtos);
                     startTrainingButton.getScene().setRoot(controllerAndView.getView().orElseThrow());
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);

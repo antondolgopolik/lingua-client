@@ -1,0 +1,23 @@
+@import "CommonStyles.css";
+
+.top-bar {
+    -fx-background-color: #6D9886;
+}
+
+.button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.title-label {
+    -fx-font-size: 24;
+    -fx-text-fill: #393E46;
+}
+
+.info-label {
+    -fx-font-size: 18;
+    -fx-text-fill: #393E46;
+}

@@ -10,17 +10,17 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.PersonalDuoWatchRequestController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/PersonalDuoWatchRequestViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.PersonalDuoWatchRequestController">
     <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0">
+        <HBox alignment="CENTER_LEFT" prefHeight="60.0" spacing="15.0" styleClass="top-bar">
             <children>
-                <Button fx:id="backToCatalogButton" mnemonicParsing="false" text="Back to catalog" />
-                <TextField fx:id="searchTextField" prefWidth="500.0" />
-            <Label text="Role:" />
-            <ChoiceBox fx:id="roleChoiceBox" prefWidth="150.0" />
-                <Label text="Status:" />
-                <ChoiceBox fx:id="statusChoiceBox" prefWidth="150.0" />
-                <Button fx:id="searchButton" mnemonicParsing="false" text="Search" />
+                <Button fx:id="backToCatalogButton" mnemonicParsing="false" styleClass="back-button" text="Back to catalog" />
+                <TextField fx:id="searchTextField" prefWidth="500.0" promptText="Enter video content name" styleClass="search-text-field" />
+            <Label styleClass="filter-label" text="Role:" />
+            <ChoiceBox fx:id="roleChoiceBox" prefWidth="150.0" styleClass="filter-choice-box" />
+                <Label styleClass="filter-label" text="Status:" />
+                <ChoiceBox fx:id="statusChoiceBox" prefWidth="150.0" styleClass="filter-choice-box" />
+                <Button fx:id="searchButton" mnemonicParsing="false" styleClass="search-button" text="Search" />
             </children>
             <padding>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />

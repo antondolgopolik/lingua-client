@@ -6,4 +6,4 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="itemVBox" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.PersonalDuoWatchRequestItemPageController" />
+<VBox fx:id="itemVBox" spacing="15.0" style="-fx-background-color: #F7F7F7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.PersonalDuoWatchRequestItemPageController" />

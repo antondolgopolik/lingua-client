@@ -38,6 +38,8 @@ public class DuoWatchRequestCatalogController implements Initializable {
     @FXML
     private ChoiceBox<LanguageDto> secondLangChoiceBox;
     @FXML
+    private ChoiceBox<String> sortChoiceBox;
+    @FXML
     private Button searchButton;
     @FXML
     private Pagination catalogItemPagination;
@@ -59,6 +61,7 @@ public class DuoWatchRequestCatalogController implements Initializable {
             videoContentLangChoiceBox.getItems().addAll(languageDtos);
             secondLangChoiceBox.getItems().addAll(languageDtos);
         }));
+        sortChoiceBox.getItems().addAll("Views", "Recommendation");
         search();
     }
 

@@ -4,46 +4,54 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
-           prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="by.bsuir.linguaclient.controller.RegisterController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/LoginViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.RegisterController">
     <children>
-        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-                  prefHeight="400.0" prefWidth="500.0">
+        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="40.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" percentWidth="60.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="40.0" />
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="60.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <TextField fx:id="usernameTextField" GridPane.columnIndex="1"/>
-                <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <PasswordField fx:id="repeatPasswordField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <Label text="Username"/>
-                <Label text="Password" GridPane.rowIndex="1"/>
-                <Label text="Repeat password" GridPane.rowIndex="2"/>
-                <Label text="Telegram code" GridPane.rowIndex="3"/>
-                <TextField fx:id="tgCodeTextField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                <HBox alignment="CENTER" spacing="100.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                <TextField fx:id="usernameTextField" promptText="Enter username" styleClass="field-text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <PasswordField fx:id="passwordField" promptText="Enter password" styleClass="field-text-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <PasswordField fx:id="repeatPasswordField" promptText="Enter password" styleClass="field-text-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label styleClass="field-label" text="Username" GridPane.rowIndex="1" />
+                <Label styleClass="field-label" text="Password" GridPane.rowIndex="2" />
+                <Label styleClass="field-label" text="Repeat password" GridPane.rowIndex="3" />
+                <Label styleClass="field-label" text="Telegram code" GridPane.rowIndex="4" />
+                <TextField fx:id="tgCodeTextField" promptText="Enter telegram code" styleClass="field-text-field" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <HBox alignment="CENTER" spacing="100.0" GridPane.columnSpan="2" GridPane.rowIndex="5">
                     <children>
-                        <Button fx:id="backToLoginButton" alignment="CENTER" mnemonicParsing="false" prefWidth="150.0"
-                                text="Back to login"/>
-                        <Button fx:id="registerButton" alignment="CENTER" mnemonicParsing="false" prefWidth="150.0"
-                                text="Register"/>
+                        <Button fx:id="backToLoginButton" alignment="CENTER" mnemonicParsing="false" prefWidth="250.0" text="Back to sign in" />
+                        <Button fx:id="registerButton" alignment="CENTER" mnemonicParsing="false" prefWidth="250.0" text="Sign up" />
                     </children>
                 </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0" GridPane.columnSpan="2">
+               <children>
+                  <Label styleClass="title-label" text="Sign up" />
+                  <ImageView fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../img/registration.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
             </children>
         </GridPane>
     </children>

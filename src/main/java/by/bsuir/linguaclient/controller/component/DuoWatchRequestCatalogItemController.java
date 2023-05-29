@@ -40,11 +40,15 @@ public class DuoWatchRequestCatalogItemController implements Initializable {
     @FXML
     private Label genresLabel;
     @FXML
+    private Button acceptButton;
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label shortDescriptionLabel;
+    @FXML
     private Label videoContentLangLabel;
     @FXML
     private Label secondLangLabel;
-    @FXML
-    private Button acceptButton;
 
     private final FxWeaver fxWeaver;
     private final LinguaClient linguaClient;
@@ -80,14 +84,21 @@ public class DuoWatchRequestCatalogItemController implements Initializable {
         this.duoWatchRequestCatalogItemDto = duoWatchRequestCatalogItemDto;
         var videoContentLocDto = duoWatchRequestCatalogItemDto.getVideoContentLocDto();
         var catalogItemDto = videoContentLocDto.getCatalogItemDto();
-        posterImageView.fitWidthProperty().bind(posterStackPane.widthProperty());
         posterImageView.fitHeightProperty().bind(posterStackPane.heightProperty());
-        linguaClient.getImage(catalogItemDto.getId()).thenAcceptAsync(image -> Platform.runLater(() -> posterImageView.setImage(image)));
-        durationLabel.setText("Duration: " + catalogItemDto.getDuration());
+        posterImageView.setImage(linguaClient.getImage(catalogItemDto.getId(), 0, 400));
+        durationLabel.setText("Duration: " + buildDuration(catalogItemDto.getDuration()));
         viewsLabel.setText("Views: " + catalogItemDto.getViews());
         genresLabel.setText(buildGenresString(catalogItemDto.getGenres()));
+        nameLabel.setText(catalogItemDto.getName());
+        shortDescriptionLabel.setText(catalogItemDto.getShortDescription());
         videoContentLangLabel.setText("Video content language: " + videoContentLocDto.getLanguage().getName());
         secondLangLabel.setText("Second language: " + duoWatchRequestCatalogItemDto.getSecondLanguage().getName());
+    }
+
+    private String buildDuration(Integer duration) {
+        long h = duration / 60;
+        long m = duration % 60;
+        return String.format("%dh %dm", h, m);
     }
 
     private String buildGenresString(List<GenreDto> genres) {

@@ -26,6 +26,12 @@ public class TrainingController implements Initializable {
     @FXML
     private Button backToDictionaryButton;
     @FXML
+    private Label progressLabel;
+    @FXML
+    private Label mistakesLabel;
+    @FXML
+    private Label questionNumberLabel;
+    @FXML
     private Label questionLabel;
     @FXML
     private TextField answerTextField;
@@ -35,8 +41,11 @@ public class TrainingController implements Initializable {
     private final FxWeaver fxWeaver;
     private final LinguaClient linguaClient;
 
-    private Iterator<DictionaryWordDto> questions;
+    private List<DictionaryWordDto> questions;
+    private Iterator<DictionaryWordDto> questionIterator;
     private DictionaryWordDto currentQuestion;
+    private int currentQuestionNumber;
+    private int mistakes;
 
     private List<TrainingAnswerDto> trainingAnswerDtos;
     private List<TrainingResultController.TrainingResultItem> trainingResultItems;
@@ -76,6 +85,9 @@ public class TrainingController implements Initializable {
                 trainingResultItem.setTranscription(currentQuestion.getTranscription());
                 trainingResultItem.setCorrect(false);
                 trainingResultItems.add(trainingResultItem);
+
+                mistakes++;
+                mistakesLabel.setText("Mistakes: " + mistakes);
             }
             answerTextField.clear();
             if (!nextQuestion()) {
@@ -86,14 +98,18 @@ public class TrainingController implements Initializable {
         });
     }
 
-    public void fill(Iterator<DictionaryWordDto> questions) {
+    public void fill(List<DictionaryWordDto> questions) {
         this.questions = questions;
+        this.questionIterator = questions.iterator();
         nextQuestion();
     }
 
     private boolean nextQuestion() {
-        if (questions.hasNext()) {
-            currentQuestion = questions.next();
+        if (questionIterator.hasNext()) {
+            progressLabel.setText("Progress: " + currentQuestionNumber + "/" + questions.size());
+            currentQuestion = questionIterator.next();
+            currentQuestionNumber++;
+            questionNumberLabel.setText("Question " + currentQuestionNumber);
             questionLabel.setText(currentQuestion.getSecondLanguageText());
             return true;
         }

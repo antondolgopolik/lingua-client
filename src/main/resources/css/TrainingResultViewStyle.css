@@ -1,0 +1,86 @@
+@import "CommonStyles.css";
+
+.top-bar {
+    -fx-background-color: #6D9886;
+}
+
+.button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.table-view .scroll-bar:vertical {
+    -fx-background-color: #F7F7F7;
+}
+.table-view .scroll-bar:vertical .decrement-button {
+    -fx-font-size: 14;
+    -fx-background-color: #393E46;
+}
+.table-view .scroll-bar:vertical .decrement-button .decrement-arrow {
+    -fx-background-color: #F7F7F7;
+}
+.table-view .scroll-bar:vertical .track {
+    -fx-background-color: #F7F7F7;
+}
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #393E46;
+}
+.table-view .scroll-bar:vertical .increment-button {
+    -fx-font-size: 14;
+    -fx-background-color: #393E46;
+}
+.table-view .scroll-bar:vertical .increment-button .increment-arrow {
+    -fx-background-color: #F7F7F7;
+}
+
+.table-view {
+    -fx-font-size: 16;
+    -fx-background-color: #F7F7F7;
+    -fx-selection-bar: #6D9886;
+    -fx-selection-bar-non-focused: #6D988660;
+}
+.table-view .column-resize-line {
+    -fx-background-color: #6D9886;
+}
+.table-view .column-overlay {
+    -fx-background-color: #6D9886;
+}
+.table-view .column-header-background {
+    -fx-border-color: #F7F7F7;
+}
+.table-view .column-header-background .nested-column-header .column-header {
+    /*Цвета заголовка таблицы*/
+    -fx-background-color: #393E46;
+    -fx-border-color: #F7F7F7;
+}
+.table-view .column-header-background .filler {
+    /*Цвет уголка таблицы*/
+    -fx-background-color: #F7F7F7;
+}
+.table-view .column-header-background .column-drag-header {
+    /*Фон заголовка при перетаскивании*/
+    -fx-background-color: #6D9886;
+}
+.table-view .column-header-background .column-drag-header .label {
+    /*Текст заголовка при перетаскивании*/
+    -fx-text-fill: #F7F7F7;
+}
+.table-view .table-column {
+    /*Текст внутри столбца*/
+    -fx-text-fill: #393E46;
+}
+.table-view .label {
+    /*Текст заголовка*/
+    -fx-text-fill: #F7F7F7;
+}
+.table-view .arrow {
+    /*Стрелка сортировки*/
+    -fx-background-color: #F7F7F7;
+}
+.table-view .placeholder .label {
+    /*Текст с информацией об отсутствии содержимого*/
+    -fx-text-fill: #393E46;
+}

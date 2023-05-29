@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxControllerAndView;
@@ -42,6 +43,8 @@ public class CatalogController implements Initializable {
     @FXML
     private TextField searchTextField;
     @FXML
+    private ChoiceBox<String> sortChoiceBox;
+    @FXML
     private Button searchButton;
     @FXML
     private Pagination catalogItemPagination;
@@ -65,6 +68,7 @@ public class CatalogController implements Initializable {
             menuButton.getScene().setRoot(fxWeaver.loadView(LoginController.class));
         });
         searchTextField.setOnAction(event -> search());
+        sortChoiceBox.getItems().addAll("Views", "Recommendation");
         search();
     }
 

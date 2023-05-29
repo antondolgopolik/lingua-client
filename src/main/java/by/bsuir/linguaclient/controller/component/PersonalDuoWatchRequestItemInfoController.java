@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.apache.commons.text.WordUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,8 @@ public class PersonalDuoWatchRequestItemInfoController {
     @FXML
     private Label genresLabel;
     @FXML
+    private Label nameLabel;
+    @FXML
     private Label videoContentLangLabel;
     @FXML
     private Label secondLangLabel;
@@ -55,15 +58,15 @@ public class PersonalDuoWatchRequestItemInfoController {
     public void fill(PersonalDuoWatchRequestDto personalDuoWatchRequestDto) {
         var videoContentLocDto = personalDuoWatchRequestDto.getVideoContentLocDto();
         var catalogItemDto = videoContentLocDto.getCatalogItemDto();
-        posterImageView.fitWidthProperty().bind(posterStackPane.widthProperty());
         posterImageView.fitHeightProperty().bind(posterStackPane.heightProperty());
-        linguaClient.getImage(catalogItemDto.getId()).thenAcceptAsync(image -> Platform.runLater(() -> posterImageView.setImage(image)));
-        durationLabel.setText("Duration: " + catalogItemDto.getDuration());
+        posterImageView.setImage(linguaClient.getImage(catalogItemDto.getId(), 0, 400));
+        durationLabel.setText("Duration: " + buildDuration(catalogItemDto.getDuration()));
         viewsLabel.setText("Views: " + catalogItemDto.getViews());
         genresLabel.setText(buildGenresString(catalogItemDto.getGenres()));
+        nameLabel.setText(catalogItemDto.getName());
         videoContentLangLabel.setText("Video content language: " + videoContentLocDto.getLanguage().getName());
         secondLangLabel.setText("Second language: " + personalDuoWatchRequestDto.getSecondLanguage().getName());
-        statusLabel.setText("Status: " + personalDuoWatchRequestDto.getStatus());
+        statusLabel.setText("Status: " + WordUtils.capitalizeFully(personalDuoWatchRequestDto.getStatus().toString().replace('_', ' ')));
         if (personalDuoWatchRequestDto.getPartnerTgUsername() != null) {
             String uri = "https://t.me/" + personalDuoWatchRequestDto.getPartnerTgUsername();
             partnerHyperlink.setText(uri);
@@ -74,6 +77,12 @@ public class PersonalDuoWatchRequestItemInfoController {
         } else {
             partnerHBox.setVisible(false);
         }
+    }
+
+    private String buildDuration(Integer duration) {
+        long h = duration / 60;
+        long m = duration % 60;
+        return String.format("%dh %dm", h, m);
     }
 
     private String buildGenresString(List<GenreDto> genres) {

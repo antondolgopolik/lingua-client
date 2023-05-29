@@ -12,30 +12,37 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
-<StackPane style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.PlayerController">
+<StackPane fx:id="rootStackPane" stylesheets="@../css/PlayerViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.PlayerController">
    <children>
         <VBox fx:id="playerVBox" StackPane.alignment="CENTER_LEFT">
             <children>
-                <StackPane fx:id="topBarStackPane" prefHeight="70.0" style="-fx-background-color: black;">
+                <StackPane fx:id="topBarStackPane" prefHeight="70.0">
                     <children>
-                        <Button fx:id="menuButton" mnemonicParsing="false" text="Menu" StackPane.alignment="CENTER_LEFT" />
+                        <Button fx:id="menuButton" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;" text="Menu" StackPane.alignment="CENTER_LEFT">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/exit.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                     </children>
                     <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                     </padding>
                 </StackPane>
-                <StackPane fx:id="imageViewStackPane" style="-fx-background-color: black;" VBox.vgrow="ALWAYS">
+                <StackPane fx:id="imageViewStackPane" VBox.vgrow="ALWAYS">
                     <children>
                         <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
                         <VBox alignment="BOTTOM_CENTER" spacing="15.0" StackPane.alignment="BOTTOM_CENTER">
                             <children>
-                                <TextFlow fx:id="textFlow1" textAlignment="CENTER" />
-                                <TextFlow fx:id="textFlow2" textAlignment="CENTER" />
+                                <TextFlow fx:id="textFlow1" styleClass="text-flow" textAlignment="CENTER" />
+                                <TextFlow fx:id="textFlow2" styleClass="text-flow" textAlignment="CENTER" />
                             </children>
                         </VBox>
                     </children>
                 </StackPane>
-                <HBox fx:id="botBarHBox" alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0" style="-fx-background-color: black;">
+                <HBox fx:id="botBarHBox" alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0">
                     <children>
                         <Button fx:id="backButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" style="-fx-background-color: transparent;">
                             <graphic>
@@ -97,6 +104,5 @@
                 </HBox>
             </children>
         </VBox>
-      <fx:include fx:id="wordPanel" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="0.0" source="WordPanelView.fxml" StackPane.alignment="CENTER_RIGHT" />
    </children>
 </StackPane>

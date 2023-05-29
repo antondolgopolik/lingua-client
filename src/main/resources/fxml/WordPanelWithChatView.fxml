@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="800.0" prefWidth="500.0" styleClass="word-panel" stylesheets="@../css/WordPanelWithChatViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.WordPanelWithChatController">
+   <items>
+        <VBox styleClass="info-vbox">
+            <children>
+                <HBox fx:id="topBarHBox" alignment="CENTER" styleClass="add-hbox">
+                    <children>
+                        <Button fx:id="addToDictionaryButton" mnemonicParsing="false" styleClass="add-button" text="Add to dictionary" />
+                    </children>
+                </HBox>
+                <Separator>
+                    <VBox.margin>
+                        <Insets bottom="15.0" top="15.0" />
+                    </VBox.margin>
+                </Separator>
+                <TreeView fx:id="wordTreeView" VBox.vgrow="ALWAYS">
+                </TreeView>
+            </children>
+         <padding>
+            <Insets bottom="15.0" />
+         </padding>
+        </VBox>
+        <VBox fx:id="chatVBox" spacing="15.0">
+            <children>
+                <ScrollPane fitToWidth="true" styleClass="messages-scroll-pane" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="messagesVBox" spacing="15.0" styleClass="messages-vbox" />
+                    </content>
+                </ScrollPane>
+                <TextArea fx:id="messageTextArea" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="100.0" promptText="Enter your message" styleClass="message-text-area" wrapText="true" />
+                <HBox alignment="CENTER_RIGHT">
+                    <children>
+                        <Button fx:id="sendButton" mnemonicParsing="false" styleClass="send-button" text="Send" />
+                    </children>
+                </HBox>
+            </children>
+         <padding>
+            <Insets top="15.0" />
+         </padding>
+        </VBox>
+   </items>
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+   </padding>
+</SplitPane>

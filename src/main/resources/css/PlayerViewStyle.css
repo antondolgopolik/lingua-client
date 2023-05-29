@@ -1,0 +1,12 @@
+.root {
+    -fx-background-color: black;
+}
+
+.text-flow {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+}
+
+.subtitle-text {
+    -fx-font-size: 24;
+    -fx-fill: white;
+}

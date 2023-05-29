@@ -1,14 +1,9 @@
 package by.bsuir.linguaclient.controller;
 
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
-import by.bsuir.linguaclient.controller.component.DuoWatchRequestCatalogItemPageController;
 import by.bsuir.linguaclient.controller.component.PersonalDuoWatchRequestItemPageController;
-import by.bsuir.linguaclient.dto.lingua.DuoWatchRequestCatalogItemPageDto;
 import by.bsuir.linguaclient.dto.lingua.DuoWatchRequestStatus;
-import by.bsuir.linguaclient.dto.lingua.LanguageDto;
 import by.bsuir.linguaclient.dto.lingua.PersonalDuoWatchRequestPageDto;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,10 +12,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.apache.commons.text.WordUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -60,6 +57,20 @@ public class PersonalDuoWatchRequestController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         backToCatalogButton.setOnAction(event -> backToCatalogButton.getScene().setRoot(fxWeaver.loadView(CatalogController.class)));
         searchTextField.setOnAction(event -> search());
+        roleChoiceBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Role role) {
+                if (role == null) {
+                    return "";
+                }
+                return WordUtils.capitalizeFully(role.toString().replace('_', ' '));
+            }
+
+            @Override
+            public Role fromString(String s) {
+                return null;
+            }
+        });
         roleChoiceBox.valueProperty().addListener((observableValue, oldV, newV) -> {
             if (newV == Role.REQUESTER) {
                 statusChoiceBox.setItems(FXCollections.observableArrayList(DuoWatchRequestStatus.values()));
@@ -69,6 +80,20 @@ public class PersonalDuoWatchRequestController implements Initializable {
         });
         roleChoiceBox.getItems().addAll(Role.values());
         roleChoiceBox.setValue(Role.REQUESTER);
+        statusChoiceBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(DuoWatchRequestStatus duoWatchRequestStatus) {
+                if (duoWatchRequestStatus == null) {
+                    return "";
+                }
+                return WordUtils.capitalizeFully(duoWatchRequestStatus.toString().replace('_', ' '));
+            }
+
+            @Override
+            public DuoWatchRequestStatus fromString(String s) {
+                return null;
+            }
+        });
         search();
     }
 

@@ -8,39 +8,46 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER_LEFT" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.PersonalDuoWatchRequestItemInfoController">
+<HBox alignment="CENTER_LEFT" spacing="15.0" stylesheets="@../css/PersonalDuoWatchRequestItemViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.PersonalDuoWatchRequestItemInfoController">
     <children>
         <StackPane fx:id="posterStackPane" prefHeight="400.0" prefWidth="250.0">
             <children>
                 <ImageView fx:id="posterImageView" fitHeight="300.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
             </children>
         </StackPane>
-        <VBox prefWidth="300.0" spacing="15.0">
+        <VBox prefWidth="250.0" spacing="15.0">
             <HBox.margin>
                 <Insets />
             </HBox.margin>
             <children>
-                <Label fx:id="durationLabel" text="Duration: " />
+                <Label fx:id="durationLabel" styleClass="info-label" text="Duration: " />
                 <Separator prefWidth="200.0" />
-                <Label fx:id="viewsLabel" text="Views: " />
+                <Label fx:id="viewsLabel" styleClass="info-label" text="Views: " />
                 <Separator prefWidth="200.0" />
-                <Label fx:id="genresLabel" text="Genres: " wrapText="true" />
-                <Separator prefWidth="200.0" />
-                <Label fx:id="videoContentLangLabel" text="Video content language: " />
-                <Label fx:id="secondLangLabel" text="Second language:" />
-            <Separator prefWidth="200.0" />
-            <Label fx:id="statusLabel" text="Status:" />
-            <HBox fx:id="partnerHBox" alignment="CENTER_LEFT">
-               <children>
-                  <Label text="Partner:" />
-                  <Hyperlink fx:id="partnerHyperlink" text="https://t.me/@AntonDV" />
-               </children>
-            </HBox>
+                <Label fx:id="genresLabel" styleClass="info-label" text="Genres: " wrapText="true" />
             </children>
             <padding>
                 <Insets bottom="15.0" top="15.0" />
             </padding>
         </VBox>
+      <VBox spacing="15.0">
+         <children>
+            <Label fx:id="nameLabel" styleClass="title-label" text="Video content name" />
+                <Label fx:id="videoContentLangLabel" styleClass="info-label" text="Video content language: " wrapText="true" />
+                <Label fx:id="secondLangLabel" styleClass="info-label" text="Second language:" wrapText="true" />
+            <Label fx:id="statusLabel" styleClass="info-label" text="Status:" />
+            <HBox fx:id="partnerHBox" alignment="CENTER_LEFT">
+               <children>
+                  <Label styleClass="info-label" text="Partner:" />
+                  <Hyperlink fx:id="partnerHyperlink" text="https://t.me/@AntonDV">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Hyperlink>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
     </children>
 </HBox>

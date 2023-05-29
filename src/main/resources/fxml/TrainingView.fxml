@@ -4,40 +4,53 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.TrainingController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@../css/TrainingViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.TrainingController">
     <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="15.0">
+        <HBox alignment="CENTER_LEFT" prefHeight="60.0" spacing="15.0" styleClass="top-bar">
             <children>
-                <Button fx:id="backToDictionaryButton" mnemonicParsing="false" text="Back to dictionary" />
+                <Button fx:id="backToDictionaryButton" mnemonicParsing="false" styleClass="back-button" text="Back to dictionary" />
             </children>
             <padding>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
             </padding>
         </HBox>
-      <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+      <VBox spacing="15.0">
          <children>
-            <StackPane prefHeight="50.0">
+            <Label fx:id="progressLabel" text="Progress: 0/1" />
+            <Label fx:id="mistakesLabel" text="Mistakes: 0" />
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </padding>
+      </VBox>
+      <VBox alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
+         <children>
+            <HBox alignment="CENTER" spacing="15.0">
                <children>
-                  <Label fx:id="questionLabel" text="Привет">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
+                  <Label fx:id="questionNumberLabel" text="Question 1" />
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../img/books-stack-of-three.png" />
+                     </image>
+                  </ImageView>
                </children>
-            </StackPane>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+            </HBox>
+            <Label fx:id="questionLabel" text="Привет" />
+            <HBox alignment="CENTER" prefHeight="60.0" spacing="15.0">
                <children>
-                  <TextField fx:id="answerTextField" prefWidth="500.0" promptText="Enter your answer">
+                  <TextField fx:id="answerTextField" prefWidth="600.0" promptText="Enter your answer">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </TextField>
-                  <Button fx:id="checkButton" mnemonicParsing="false" text="Check" />
+                  <Button fx:id="checkButton" mnemonicParsing="false" styleClass="check-button" text="Check" />
                </children>
             </HBox>
             <StackPane prefHeight="50.0" />

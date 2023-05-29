@@ -26,8 +26,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -42,14 +41,19 @@ public class LinguaClient {
     private final AsyncHttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final SubtitleParser subtitleParser;
+    private final String usernamePreferencesKey;
+    private final String rolesPreferencesKey;
     private final String tokenPreferencesKey;
     private final ReadWriteLock tokenReadWriteLock;
+    private String username;
+    private List<Role> roles;
     private String token;
 
     private final String registerApiUri;
     private final String loginApiUri;
     private final String catalogSearchApiUri;
     private final String videoContentApiUri;
+    private final String videoContentEditApiUri;
     private final String createDuoWatchRequestApiUri;
     private final String duoWatchRequestCatalogSearchApiUri;
     private final String duoWatchRequestPersonalSearchApiUri;
@@ -66,11 +70,14 @@ public class LinguaClient {
 
     public LinguaClient(Preferences preferences,
                         SubtitleParser subtitleParser,
+                        @Value("${app.preference.key.username}") String usernamePreferencesKey,
+                        @Value("${app.preference.key.roles}") String rolesPreferencesKey,
                         @Value("${app.preference.key.token}") String tokenPreferencesKey,
                         @Value("${app.uri.lingua.api.register}") String registerApiUri,
                         @Value("${app.uri.lingua.api.login}") String loginApiUri,
                         @Value("${app.uri.lingua.api.catalog.search}") String catalogSearchApiUri,
                         @Value("${app.uri.lingua.api.videocontent.details}") String videoContentApiUri,
+                        @Value("${app.uri.lingua.api.videocontent.edit}") String videoContentEditApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.create}") String createDuoWatchRequestApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.catalog.search}") String duoWatchRequestCatalogSearchApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.personal.search}") String duoWatchRequestPersonalSearchApiUri,
@@ -87,13 +94,16 @@ public class LinguaClient {
         this.httpClient = buildHttpClient();
         this.objectMapper = new ObjectMapper();
         this.subtitleParser = subtitleParser;
+        this.usernamePreferencesKey = usernamePreferencesKey;
+        this.rolesPreferencesKey = rolesPreferencesKey;
         this.tokenPreferencesKey = tokenPreferencesKey;
         this.tokenReadWriteLock = new ReentrantReadWriteLock(true);
-        this.token = preferences.get(tokenPreferencesKey, null);
+        loadState();
         this.registerApiUri = registerApiUri;
         this.loginApiUri = loginApiUri;
         this.catalogSearchApiUri = catalogSearchApiUri;
         this.videoContentApiUri = videoContentApiUri;
+        this.videoContentEditApiUri = videoContentEditApiUri;
         this.createDuoWatchRequestApiUri = createDuoWatchRequestApiUri;
         this.duoWatchRequestCatalogSearchApiUri = duoWatchRequestCatalogSearchApiUri;
         this.duoWatchRequestPersonalSearchApiUri = duoWatchRequestPersonalSearchApiUri;
@@ -136,8 +146,10 @@ public class LinguaClient {
     private <T> FilterContext<T> checkAuth(FilterContext<T> filterContext) {
         if (filterContext.getResponseStatus().getStatusCode() == HttpConstants.ResponseStatusCodes.UNAUTHORIZED_401) {
             tokenReadWriteLock.writeLock().lock();
+            username = null;
+            roles = Collections.emptyList();
             token = null;
-            preferences.remove(tokenPreferencesKey);
+            persistState();
             tokenReadWriteLock.writeLock().unlock();
             throw new UnauthorizedException();
         }
@@ -151,6 +163,14 @@ public class LinguaClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
     }
 
     public CompletableFuture<Boolean> register(RegistrationFormDto registrationFormDto) {
@@ -178,9 +198,18 @@ public class LinguaClient {
     private boolean saveToken(Response response, Throwable throwable) {
         if (response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200) {
             tokenReadWriteLock.writeLock().lock();
-            token = response.getResponseBody();
-            preferences.put(tokenPreferencesKey, token);
-            tokenReadWriteLock.writeLock().unlock();
+            String json = response.getResponseBody();
+            try {
+                var loginResultDto = objectMapper.readValue(json, LoginResultDto.class);
+                username = loginResultDto.getUsername();
+                roles = loginResultDto.getRoles();
+                token = loginResultDto.getToken();
+                persistState();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            } finally {
+                tokenReadWriteLock.writeLock().unlock();
+            }
             return true;
         } else {
             return false;
@@ -189,8 +218,10 @@ public class LinguaClient {
 
     public void logOut() {
         tokenReadWriteLock.writeLock().lock();
+        username = null;
+        roles = Collections.emptyList();
         token = null;
-        preferences.remove(tokenPreferencesKey);
+        persistState();
         tokenReadWriteLock.writeLock().unlock();
     }
 
@@ -226,7 +257,7 @@ public class LinguaClient {
         }
     }
 
-    public CompletableFuture<VideoContentDetailsDto> getVideoContentDetails(String videoContentId) {
+    public CompletableFuture<VideoContentDetailsDto> getVideoContentDetails(UUID videoContentId) {
         return httpClient.prepareGet(videoContentApiUri + videoContentId)
                 .execute().toCompletableFuture().handleAsync(this::mapResponseToVideoContentDetailsDto);
     }
@@ -391,14 +422,14 @@ public class LinguaClient {
     }
 
     public CompletableFuture<List<DictionaryWordDto>> getTraining(Long dictionaryId,
-                                                                   Integer size) {
+                                                                  Integer size) {
         return httpClient.prepareGet(trainingsApiUri + "/" + dictionaryId)
                 .addQueryParam("size", size.toString())
                 .execute().toCompletableFuture().handleAsync(this::mapResponseToDictionaryWordDtos);
     }
 
     public CompletableFuture<Boolean> saveTrainingAnswers(Long dictionaryId,
-                                                           List<TrainingAnswerDto> trainingAnswerDtos) {
+                                                          List<TrainingAnswerDto> trainingAnswerDtos) {
         try {
             String body = objectMapper.writeValueAsString(trainingAnswerDtos);
             return httpClient.preparePost(trainingsApiUri + "/" + dictionaryId + "/answers")
@@ -409,13 +440,23 @@ public class LinguaClient {
         }
     }
 
-    public CompletableFuture<Image> getImage(String imageId) {
-        return httpClient.prepareGet(pictureUri + imageId)
-                .execute().toCompletableFuture().handleAsync(this::mapResponseToImage);
+    public CompletableFuture<VideoContentEditFormDto> getVideoContentEditFormDto(UUID videoContentId) {
+        String uri = videoContentEditApiUri.replaceFirst("\\{}", videoContentId.toString());
+        return httpClient.prepareGet(uri)
+                .execute().toCompletableFuture().handleAsync(this::mapResponseToVideoContentEditFormDto);
     }
 
-    public Image mapResponseToImage(Response response, Throwable throwable) {
-        return new Image(response.getResponseBodyAsStream());
+    private VideoContentEditFormDto mapResponseToVideoContentEditFormDto(Response response, Throwable throwable) {
+        try {
+            String json = response.getResponseBody();
+            return objectMapper.readValue(json, VideoContentEditFormDto.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Image getImage(UUID imageId, double width, double height) {
+        return new Image(pictureUri + imageId, width, height, true, true, true);
     }
 
     public void playVideoContent(EmbeddedMediaPlayer embeddedMediaPlayer, UUID videoContentId) {
@@ -448,5 +489,46 @@ public class LinguaClient {
 
     private Subtitle mapResponseToSubtitle(Response response, Throwable throwable) {
         return subtitleParser.parse(response.getResponseBodyAsStream());
+    }
+
+    private String rolesToString(List<Role> roles) {
+        StringBuilder builder = new StringBuilder();
+        for (Role role : roles) {
+            builder.append(role.toString()).append(';');
+        }
+        builder.setLength(builder.length() - 1);
+        return builder.toString();
+    }
+
+    private List<Role> stringToRoles(String s) {
+        return Arrays.stream(s.split(";"))
+                .map(Role::valueOf)
+                .toList();
+    }
+
+    private void persistState() {
+        if (username != null) {
+            preferences.put(usernamePreferencesKey, username);
+        } else {
+            preferences.remove(usernamePreferencesKey);
+        }
+        if (!roles.isEmpty()) {
+            preferences.put(rolesPreferencesKey, rolesToString(roles));
+        } else {
+            preferences.remove(rolesPreferencesKey);
+        }
+        if (token != null) {
+            preferences.put(tokenPreferencesKey, token);
+        } else {
+            preferences.remove(tokenPreferencesKey);
+        }
+    }
+
+    private void loadState() {
+        username = preferences.get(usernamePreferencesKey, null);
+        roles = Optional.ofNullable(preferences.get(rolesPreferencesKey, null))
+                .map(this::stringToRoles)
+                .orElse(Collections.emptyList());
+        token = preferences.get(tokenPreferencesKey, null);
     }
 }

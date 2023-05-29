@@ -2,10 +2,13 @@ package by.bsuir.linguaclient.controller.component;
 
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import by.bsuir.linguaclient.controller.VideoContentDetailsController;
+import by.bsuir.linguaclient.controller.VideoContentEditController;
 import by.bsuir.linguaclient.dto.lingua.CatalogItemDto;
 import by.bsuir.linguaclient.dto.lingua.GenreDto;
+import by.bsuir.linguaclient.dto.lingua.Role;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -61,20 +64,24 @@ public class CatalogItemController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        goToDetailsButton.setOnAction(this::goToDetailsButtonActionHandler);
-    }
-
-    private void goToDetailsButtonActionHandler(ActionEvent event) {
-        FxControllerAndView<VideoContentDetailsController, Parent> controllerAndView = fxWeaver.load(VideoContentDetailsController.class);
-        controllerAndView.getController().fill(catalogItemDto.getId());
-        goToDetailsButton.getScene().setRoot(controllerAndView.getView().orElseThrow());
+        goToDetailsButton.setOnAction(event -> {
+            List<Role> roles = linguaClient.getRoles();
+            if (!roles.contains(Role.ROLE_CONTENT_MANAGER)) {
+                FxControllerAndView<VideoContentDetailsController, Parent> controllerAndView = fxWeaver.load(VideoContentDetailsController.class);
+                controllerAndView.getController().fill(catalogItemDto.getId());
+                goToDetailsButton.getScene().setRoot(controllerAndView.getView().orElseThrow());
+            } else {
+                FxControllerAndView<VideoContentEditController, Parent> controllerAndView = fxWeaver.load(VideoContentEditController.class);
+                controllerAndView.getController().fill(catalogItemDto.getId());
+                goToDetailsButton.getScene().setRoot(controllerAndView.getView().orElseThrow());
+            }
+        });
     }
 
     public void fill(CatalogItemDto catalogItemDto) {
         this.catalogItemDto = catalogItemDto;
-        posterImageView.fitWidthProperty().bind(posterStackPane.widthProperty());
         posterImageView.fitHeightProperty().bind(posterStackPane.heightProperty());
-        linguaClient.getImage(catalogItemDto.getId()).thenAcceptAsync(image -> Platform.runLater(() -> posterImageView.setImage(image)));
+        posterImageView.setImage(linguaClient.getImage(catalogItemDto.getId(), 0, 400));
         durationLabel.setText("Duration: " + buildDuration(catalogItemDto.getDuration()));
         viewsLabel.setText("Views: " + catalogItemDto.getViews());
         genresLabel.setText(buildGenresString(catalogItemDto.getGenres()));

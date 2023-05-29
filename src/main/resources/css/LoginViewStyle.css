@@ -1,0 +1,26 @@
+@import "CommonStyles.css";
+
+.button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 24;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.title-label {
+    -fx-font-size: 28;
+}
+
+.field-label {
+    -fx-font-size: 24;
+}
+
+.field-text-field {
+    -fx-font-size: 24;
+    -fx-text-fill: #393E46;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 12;
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+}

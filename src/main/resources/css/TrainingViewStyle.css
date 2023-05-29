@@ -1,0 +1,35 @@
+@import "CommonStyles.css";
+
+.top-bar {
+    -fx-background-color: #6D9886;
+}
+
+.text-field {
+    -fx-font-size: 24;
+    -fx-text-fill: #393E46;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 12;
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+}
+
+.back-button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.check-button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 24;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.label {
+    -fx-font-size: 24;
+    -fx-text-fill: #393E46;
+}

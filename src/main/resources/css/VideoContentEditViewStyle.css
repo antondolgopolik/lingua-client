@@ -1,0 +1,105 @@
+@import "CommonStyles.css";
+
+.field-label {
+    -fx-font-size: 18;
+}
+
+.field-text-field {
+    -fx-font-size: 18;
+    -fx-text-fill: #393E46;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 12;
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+}
+
+.field-text-area {
+    -fx-font-size: 18;
+    -fx-text-fill: #393E46;
+    -fx-background-color: transparent, transparent, transparent, transparent;
+}
+.field-text-area .scroll-pane .content {
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+    -fx-background-color: #F7F7F7;
+}
+
+.button {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.genre-choice-box {
+    -fx-background-color: #393E46;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+.genre-choice-box .label {
+    -fx-text-fill: #F7F7F7;
+}
+.genre-choice-box .arrow {
+    -fx-font-size: 16;
+    -fx-background-color: #F7F7F7;
+}
+.genre-choice-box .context-menu {
+    -fx-background-color: #F7F7F7;
+    -fx-border-color: #393E46;
+}
+.genre-choice-box .context-menu .menu-item {
+    -fx-background-color: #F7F7F7;
+    -fx-text-fill: #393E46;
+}
+.genre-choice-box .context-menu .menu-item .label {
+    -fx-text-fill: #393E46;
+}
+.genre-choice-box .context-menu .menu-item:focused {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+}
+.genre-choice-box .context-menu .menu-item:focused .label {
+    -fx-text-fill: #F7F7F7;
+}
+
+.separator .line {
+    -fx-border-width: 1;
+    -fx-border-color: #393E46;
+}
+
+.list-view {
+    -fx-font-size: 16;
+    -fx-background-color: #F7F7F7;
+    -fx-border-color: #393E46;
+}
+.list-view .scroll-bar:vertical {
+    -fx-background-color: #F7F7F7;
+}
+.list-view .scroll-bar:vertical .decrement-button {
+    -fx-font-size: 14;
+    -fx-background-color: #393E46;
+}
+.list-view .scroll-bar:vertical .decrement-button .decrement-arrow {
+    -fx-background-color: #F7F7F7;
+}
+.list-view .scroll-bar:vertical .track {
+    -fx-background-color: #F7F7F7;
+}
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #393E46;
+}
+.list-view .scroll-bar:vertical .increment-button {
+    -fx-font-size: 14;
+    -fx-background-color: #393E46;
+}
+.list-view .scroll-bar:vertical .increment-button .increment-arrow {
+    -fx-background-color: #F7F7F7;
+}
+.list-view .list-cell {
+    -fx-text-fill: #393E46;
+}
+.list-view .list-cell:selected {
+    -fx-background-color: #6D9886;
+}

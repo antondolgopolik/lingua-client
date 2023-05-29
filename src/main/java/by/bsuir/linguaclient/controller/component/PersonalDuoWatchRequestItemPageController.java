@@ -3,6 +3,7 @@ package by.bsuir.linguaclient.controller.component;
 import by.bsuir.linguaclient.dto.lingua.PersonalDuoWatchRequestDto;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxControllerAndView;
@@ -39,7 +40,7 @@ public class PersonalDuoWatchRequestItemPageController {
                 case CLOSED -> clazz = ClosedDuoWatchRequestItemController.class;
                 default -> clazz = CancelledDuoWatchRequestItemController.class;
             }
-            FxControllerAndView<? extends AbstractPersonalDuoWatchRequestItemController, Node> controllerAndView = fxWeaver.load(clazz);
+            FxControllerAndView<? extends AbstractPersonalDuoWatchRequestItemController, HBox> controllerAndView = fxWeaver.load(clazz);
             controllerAndView.getController().fill(personalDuoWatchRequestDto, owner);
             items.add(controllerAndView.getView().orElseThrow());
         }

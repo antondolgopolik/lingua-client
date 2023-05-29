@@ -1,0 +1,146 @@
+.word-panel {
+    -fx-background-color: #18171B;
+}
+
+.word-panel .split-pane-divider {
+    -fx-background-color: #F7F7F7;
+    -fx-padding: 1;
+}
+
+.info-vbox {
+    -fx-background-color: #18171B;
+}
+
+.add-hbox {
+    -fx-background-color: #18171B;
+}
+
+.add-button {
+    -fx-font-size: 18;
+    -fx-text-fill: black;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.tree-view {
+    -fx-background-color: #18171B;
+}
+
+.tree-view .scroll-bar:vertical {
+    -fx-background-color: #18171B;
+}
+
+.tree-view .scroll-bar:vertical .decrement-button {
+    -fx-font-size: 14;
+    -fx-background-color: #F7F7F7;
+}
+
+.tree-view .scroll-bar:vertical .decrement-button .decrement-arrow {
+    -fx-background-color: #18171B;
+}
+
+.tree-view .scroll-bar:vertical .track {
+    -fx-background-color: #18171B;
+}
+
+.tree-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #F7F7F7;
+}
+
+.tree-view .scroll-bar:vertical .increment-button {
+    -fx-font-size: 14;
+    -fx-background-color: #F7F7F7;
+}
+
+.tree-view .scroll-bar:vertical .increment-button .increment-arrow {
+    -fx-background-color: #18171B;
+}
+
+.tree-cell {
+    -fx-background-color: #18171B;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 16;
+}
+
+.tree-cell:focused {
+    -fx-background-color: #F7F7F7;
+    -fx-text-fill: #18171B;
+}
+
+.owner-username-text {
+    -fx-fill: #CB01F9;
+    -fx-font-size: 16;
+}
+
+.non-owner-username-text {
+    -fx-fill: #00FF80;
+    -fx-font-size: 16;
+}
+
+.message-text {
+    -fx-fill: white;
+    -fx-font-size: 16;
+}
+
+.messages-scroll-pane {
+    -fx-background-color: #18171B;
+}
+
+.messages-scroll-pane .viewport {
+    -fx-background-color: #18171B;
+}
+
+.messages-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: #18171B;
+}
+
+.messages-scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-font-size: 14;
+    -fx-background-color: #F7F7F7;
+}
+
+.messages-scroll-pane .scroll-bar:vertical .decrement-button .decrement-arrow {
+    -fx-background-color: #18171B;
+}
+
+.messages-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: #18171B;
+}
+
+.messages-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #F7F7F7;
+}
+
+.messages-scroll-pane .scroll-bar:vertical .increment-button {
+    -fx-font-size: 14;
+    -fx-background-color: #F7F7F7;
+}
+
+.messages-scroll-pane .scroll-bar:vertical .increment-button .increment-arrow {
+    -fx-background-color: #18171B;
+}
+
+.messages-vbox {
+    -fx-background-color: #18171B;
+}
+
+.message-text-area {
+    -fx-font-size: 16;
+    -fx-text-fill: #F7F7F7;
+    -fx-background-color: transparent, transparent, transparent, transparent;
+}
+
+.message-text-area .scroll-pane .content {
+    -fx-border-color: #F7F7F7;
+    -fx-border-radius: 12;
+    -fx-background-color: #18171B;
+}
+
+.send-button {
+    -fx-font-size: 16;
+    -fx-text-fill: black;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
