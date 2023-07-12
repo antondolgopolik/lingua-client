@@ -1,5 +1,6 @@
 package by.bsuir.linguaclient.controller.component;
 
+import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -8,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import lombok.extern.slf4j.Slf4j;
+import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ import java.util.function.Consumer;
 @Scope("prototype")
 @FxmlView("/fxml/WordPanelWithChatView.fxml")
 @Slf4j
-public class WordPanelWithChatController extends AbstractWordPanelController implements Initializable {
+public class WordPanelWithChatController extends AbstractWordPanelController {
 
     @FXML
     private VBox chatVBox;
@@ -34,8 +36,13 @@ public class WordPanelWithChatController extends AbstractWordPanelController imp
     private String username;
     private Consumer<String> messageSendHandler;
 
+    public WordPanelWithChatController(FxWeaver fxWeaver, LinguaClient linguaClient) {
+        super(fxWeaver, linguaClient);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        super.initialize(url, resourceBundle);
         sendButton.setOnAction(event -> {
             String message = messageTextArea.getText();
             messageTextArea.clear();

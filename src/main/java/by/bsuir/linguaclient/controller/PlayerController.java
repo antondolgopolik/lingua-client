@@ -317,13 +317,15 @@ public class PlayerController implements Initializable {
                      LanguageDto secondLanguage,
                      Scene scene) {
         try {
+            linguaClient.prepareVideoContent(embeddedMediaPlayer, videoContentLocId);
             if (duoWatchRequestDto != null) {
                 FxControllerAndView<WordPanelWithChatController, Region> controllerAndView = fxWeaver.load(WordPanelWithChatController.class);
                 WordPanelWithChatController wordPanelWithChatController = controllerAndView.getController();
                 wordPanelController = wordPanelWithChatController;
                 wordPanel = controllerAndView.getView().orElseThrow();
 
-                prepareForDuoWatch(duoWatchRequestDto);
+                Thread.sleep(1500);
+                prepareForDuoWatch(videoContentLocId, duoWatchRequestDto);
                 wordPanelWithChatController.fill(linguaClient.getUsername(), this::sendChatMessage);
             } else {
                 FxControllerAndView<WordPanelController, Region> controllerAndView = fxWeaver.load(WordPanelController.class);
@@ -349,13 +351,16 @@ public class PlayerController implements Initializable {
             };
             scene.setOnKeyPressed(sceneKeyPressedHandler);
 
-            linguaClient.playVideoContent(embeddedMediaPlayer, videoContentLocId);
+            if (duoWatchRequestDto == null) {
+                embeddedMediaPlayer.controls().play();
+            }
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void prepareForDuoWatch(PersonalDuoWatchRequestDto duoWatchRequestDto) {
+    private void prepareForDuoWatch(UUID videoContentLocId,
+                                    PersonalDuoWatchRequestDto duoWatchRequestDto) {
         this.duoWatchRequestDto = duoWatchRequestDto;
         this.stompSession = linguaClient.connectWebSocket();
 
@@ -381,6 +386,34 @@ public class PlayerController implements Initializable {
                             var wordPanelWitchChatController = (WordPanelWithChatController) wordPanelController;
                             var msg = (ArrayList<String>) playerMessage.getPayload();
                             wordPanelWitchChatController.showMessage(msg.get(0), msg.get(1), false);
+                        }
+                        case PARTNER_CONNECTED -> {
+                            PlayerMessageDto playerMessageDto = new PlayerMessageDto();
+                            playerMessageDto.setMessageType(PlayerMessageType.INIT_PLAYER_STATE);
+                            String[] playerState = new String[2];
+                            playerState[0] = embeddedMediaPlayer.status().isPlaying() ? "playing" : "paused";
+                            playerState[1] = String.valueOf(embeddedMediaPlayer.status().time());
+                            playerMessageDto.setPayload(playerState);
+                            sendMessage(playerMessageDto);
+
+                            var wordPanelWitchChatController = (WordPanelWithChatController) wordPanelController;
+                            wordPanelWitchChatController.showMessage("#info", "partner connected", false);
+                        }
+                        case PARTNER_DISCONNECTED -> {
+                            var wordPanelWitchChatController = (WordPanelWithChatController) wordPanelController;
+                            wordPanelWitchChatController.showMessage("#info", "partner disconnected", false);
+                        }
+                        case NO_PLAYER_STATE -> {
+                            embeddedMediaPlayer.controls().play();
+                        }
+                        case INIT_PLAYER_STATE -> {
+                            var msg = (ArrayList<String>) playerMessage.getPayload();
+                            String state = msg.get(0);
+                            if ("playing".equals(state)) {
+                                embeddedMediaPlayer.controls().play();
+                            }
+                            String startTime = msg.get(1);
+                            embeddedMediaPlayer.controls().setTime(Long.parseLong(startTime));
                         }
                     }
                 });

@@ -8,6 +8,8 @@ import by.bsuir.linguaclient.dto.lingua.SubtitleDto;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
@@ -32,11 +34,23 @@ public class ClosedDuoWatchRequestItemController extends AbstractPersonalDuoWatc
     public void fill(PersonalDuoWatchRequestDto personalDuoWatchRequestDto, boolean owner) {
         super.fill(personalDuoWatchRequestDto, owner);
         addActionButton("Watch", event -> {
-            FxControllerAndView<PlayerController, Parent> controllerAndView = fxWeaver.load(PlayerController.class);
-            PlayerController playerController = controllerAndView.getController();
             var videoContentLocDto = personalDuoWatchRequestDto.getVideoContentLocDto();
             var videoContentLocDtoId = videoContentLocDto.getId();
             var secondLanguage = personalDuoWatchRequestDto.getSecondLanguage();
+
+            try {
+                boolean success = linguaClient.createViewHistoryRecord(videoContentLocDto.getId()).get();
+                if (!success) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "View history record wasn't created", ButtonType.OK);
+                    alert.showAndWait();
+                    return;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+
+            FxControllerAndView<PlayerController, Parent> controllerAndView = fxWeaver.load(PlayerController.class);
+            PlayerController playerController = controllerAndView.getController();
             try {
                 SubtitleDto subtitleDto = linguaClient.getSubtitleDto(videoContentLocDtoId, secondLanguage.getId()).get();
                 playerController.fill(

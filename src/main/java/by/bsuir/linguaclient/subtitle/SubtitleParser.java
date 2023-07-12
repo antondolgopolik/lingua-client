@@ -32,6 +32,7 @@ public class SubtitleParser {
         ArrayList<SubtitleItem> subtitleItems = new ArrayList<>();
         try {
             String strSeqNumber;
+            reader.readLine();
             while ((strSeqNumber = reader.readLine()) != null) {
                 SubtitleItem subtitleItem = new SubtitleItem();
                 subtitleItem.setSeqNumber(Integer.parseInt(strSeqNumber));

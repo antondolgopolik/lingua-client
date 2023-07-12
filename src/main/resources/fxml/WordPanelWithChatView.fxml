@@ -16,7 +16,7 @@
             <children>
                 <HBox fx:id="topBarHBox" alignment="CENTER" styleClass="add-hbox">
                     <children>
-                        <Button fx:id="addToDictionaryButton" mnemonicParsing="false" styleClass="add-button" text="Add to dictionary" />
+                        <Button fx:id="addToDictionaryButton" disable="true" mnemonicParsing="false" styleClass="add-button" text="Add to dictionary" />
                     </children>
                 </HBox>
                 <Separator>

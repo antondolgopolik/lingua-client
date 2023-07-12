@@ -1,6 +1,8 @@
 package by.bsuir.linguaclient.controller;
 
 import by.bsuir.linguaclient.api.lingua.LinguaClient;
+import by.bsuir.linguaclient.dto.dictionary.DicResultDto;
+import by.bsuir.linguaclient.dto.lingua.DictionaryDto;
 import by.bsuir.linguaclient.dto.lingua.DictionaryWordDto;
 import by.bsuir.linguaclient.dto.lingua.TrainingAnswerDto;
 import javafx.fxml.FXML;
@@ -41,6 +43,7 @@ public class TrainingController implements Initializable {
     private final FxWeaver fxWeaver;
     private final LinguaClient linguaClient;
 
+    private DictionaryDto dictionaryDto;
     private List<DictionaryWordDto> questions;
     private Iterator<DictionaryWordDto> questionIterator;
     private DictionaryWordDto currentQuestion;
@@ -91,14 +94,17 @@ public class TrainingController implements Initializable {
             }
             answerTextField.clear();
             if (!nextQuestion()) {
+                linguaClient.saveTrainingResult(trainingAnswerDtos);
+
                 FxControllerAndView<TrainingResultController, Parent> controllerAndView = fxWeaver.load(TrainingResultController.class);
-                controllerAndView.getController().fill(trainingResultItems);
+                controllerAndView.getController().fill(dictionaryDto, trainingResultItems);
                 answerTextField.getScene().setRoot(controllerAndView.getView().orElseThrow());
             }
         });
     }
 
-    public void fill(List<DictionaryWordDto> questions) {
+    public void fill(DictionaryDto dictionaryDto, List<DictionaryWordDto> questions) {
+        this.dictionaryDto = dictionaryDto;
         this.questions = questions;
         this.questionIterator = questions.iterator();
         nextQuestion();

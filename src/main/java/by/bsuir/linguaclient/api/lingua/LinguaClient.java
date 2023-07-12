@@ -54,6 +54,7 @@ public class LinguaClient {
     private final String catalogSearchApiUri;
     private final String videoContentApiUri;
     private final String videoContentEditApiUri;
+    private final String viewHistoryRecordApiUri;
     private final String createDuoWatchRequestApiUri;
     private final String duoWatchRequestCatalogSearchApiUri;
     private final String duoWatchRequestPersonalSearchApiUri;
@@ -61,7 +62,7 @@ public class LinguaClient {
     private final String allLanguagesApiUri;
     private final String subtitleApiUri;
     private final String dictionariesApiUri;
-    private final String addDictionaryApiUri;
+    private final String dictionariesWordsApiUri;
     private final String trainingsApiUri;
 
     private final String pictureUri;
@@ -78,6 +79,7 @@ public class LinguaClient {
                         @Value("${app.uri.lingua.api.catalog.search}") String catalogSearchApiUri,
                         @Value("${app.uri.lingua.api.videocontent.details}") String videoContentApiUri,
                         @Value("${app.uri.lingua.api.videocontent.edit}") String videoContentEditApiUri,
+                        @Value("${app.uri.lingua.api.view-history-record}") String viewHistoryRecordApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.create}") String createDuoWatchRequestApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.catalog.search}") String duoWatchRequestCatalogSearchApiUri,
                         @Value("${app.uri.lingua.api.duo-watch-request.personal.search}") String duoWatchRequestPersonalSearchApiUri,
@@ -85,7 +87,7 @@ public class LinguaClient {
                         @Value("${app.uri.lingua.api.language.all}") String allLanguagesApiUri,
                         @Value("${app.uri.lingua.api.subtitle}") String subtitleApiUri,
                         @Value("${app.uri.lingua.api.dictionaries}") String dictionariesApiUri,
-                        @Value("${app.uri.lingua.api.dictionaries.add}") String addDictionaryApiUri,
+                        @Value("${app.uri.lingua.api.dictionaries.words}") String dictionariesWordsApiUri,
                         @Value("${app.uri.lingua.api.trainings}") String trainingsApiUri,
                         @Value("${app.uri.lingua.picture}") String pictureUri,
                         @Value("${app.uri.lingua.videocontent}") String videoContentUri,
@@ -104,6 +106,7 @@ public class LinguaClient {
         this.catalogSearchApiUri = catalogSearchApiUri;
         this.videoContentApiUri = videoContentApiUri;
         this.videoContentEditApiUri = videoContentEditApiUri;
+        this.viewHistoryRecordApiUri = viewHistoryRecordApiUri;
         this.createDuoWatchRequestApiUri = createDuoWatchRequestApiUri;
         this.duoWatchRequestCatalogSearchApiUri = duoWatchRequestCatalogSearchApiUri;
         this.duoWatchRequestPersonalSearchApiUri = duoWatchRequestPersonalSearchApiUri;
@@ -111,7 +114,7 @@ public class LinguaClient {
         this.allLanguagesApiUri = allLanguagesApiUri;
         this.subtitleApiUri = subtitleApiUri;
         this.dictionariesApiUri = dictionariesApiUri;
-        this.addDictionaryApiUri = addDictionaryApiUri;
+        this.dictionariesWordsApiUri = dictionariesWordsApiUri;
         this.trainingsApiUri = trainingsApiUri;
         this.pictureUri = pictureUri;
         this.videoContentUri = videoContentUri;
@@ -234,7 +237,8 @@ public class LinguaClient {
 
     public CompletableFuture<CatalogItemPageDto> catalogSearch(String name,
                                                                Integer page,
-                                                               Integer pageSize) {
+                                                               Integer pageSize,
+                                                               String sortType) {
         BoundRequestBuilder requestBuilder = httpClient.prepareGet(catalogSearchApiUri);
         if (name != null) {
             requestBuilder.addQueryParam("q", name);
@@ -244,6 +248,9 @@ public class LinguaClient {
         }
         if (pageSize != null) {
             requestBuilder.addQueryParam("s", pageSize.toString());
+        }
+        if (sortType != null) {
+            requestBuilder.addQueryParam("sortType", sortType);
         }
         return requestBuilder.execute().toCompletableFuture().handleAsync(this::mapResponseToCatalogItemPageDto);
     }
@@ -271,6 +278,15 @@ public class LinguaClient {
         }
     }
 
+    public CompletableFuture<Boolean> createViewHistoryRecord(UUID videoContentLocId) {
+        return httpClient.preparePost(viewHistoryRecordApiUri + videoContentLocId)
+                .execute().toCompletableFuture().handleAsync(this::mapResponseToViewHistoryRecordSuccess);
+    }
+
+    private Boolean mapResponseToViewHistoryRecordSuccess(Response response, Throwable throwable) {
+        return response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200;
+    }
+
     public CompletableFuture<Boolean> createDuoWatchRequest(CreateDuoWatchRequestFormDto createDuoWatchRequestFormDto) {
         try {
             String body = objectMapper.writeValueAsString(createDuoWatchRequestFormDto);
@@ -290,7 +306,8 @@ public class LinguaClient {
                                                                                              Long videoContentLangId,
                                                                                              Long secondLangId,
                                                                                              Integer page,
-                                                                                             Integer pageSize) {
+                                                                                             Integer pageSize,
+                                                                                             String sortType) {
         BoundRequestBuilder requestBuilder = httpClient.prepareGet(duoWatchRequestCatalogSearchApiUri);
         if (name != null) {
             requestBuilder.addQueryParam("q", name);
@@ -306,6 +323,9 @@ public class LinguaClient {
         }
         if (pageSize != null) {
             requestBuilder.addQueryParam("s", pageSize.toString());
+        }
+        if (sortType != null) {
+            requestBuilder.addQueryParam("sortType", sortType);
         }
         return requestBuilder.execute().toCompletableFuture().handleAsync(this::mapResponseToDuoWatchRequestCatalogItemPageDto);
     }
@@ -390,6 +410,38 @@ public class LinguaClient {
         }
     }
 
+    public CompletableFuture<Boolean> addWordToDictionary(Long dictionaryId,
+                                                          AddWordToDictionaryFormDto addWordToDictionaryFormDto) {
+        try {
+            String uri = dictionariesWordsApiUri.replaceFirst("\\{}", dictionaryId.toString());
+            String body = objectMapper.writeValueAsString(addWordToDictionaryFormDto);
+            return httpClient.preparePost(uri)
+                    .setBody(body)
+                    .execute().toCompletableFuture().handleAsync(this::mapResponseToAddWordToDictionarySuccess);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Boolean mapResponseToAddWordToDictionarySuccess(Response response, Throwable throwable) {
+        return response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200;
+    }
+
+    public CompletableFuture<Boolean> saveTrainingResult(List<TrainingAnswerDto> trainingAnswerDtos) {
+        try {
+            String body = objectMapper.writeValueAsString(trainingAnswerDtos);
+            return httpClient.preparePost(trainingsApiUri)
+                    .setBody(body)
+                    .execute().toCompletableFuture().handleAsync(this::mapResponseToSaveTrainingResultSuccess);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Boolean mapResponseToSaveTrainingResultSuccess(Response response, Throwable throwable) {
+        return response.getStatusCode() == HttpConstants.ResponseStatusCodes.OK_200;
+    }
+
     public CompletableFuture<List<DictionaryWordDto>> getDictionaryWordDtos(Long dictionaryId) {
         return httpClient.prepareGet(dictionariesApiUri + "/" + dictionaryId)
                 .execute().toCompletableFuture().handleAsync(this::mapResponseToDictionaryWordDtos);
@@ -464,6 +516,13 @@ public class LinguaClient {
         String uri = videoContentUri + videoContentId + "?token=" + token;
         tokenReadWriteLock.readLock().unlock();
         embeddedMediaPlayer.media().play(uri);
+    }
+
+    public void prepareVideoContent(EmbeddedMediaPlayer embeddedMediaPlayer, UUID videoContentId) {
+        tokenReadWriteLock.readLock().lock();
+        String uri = videoContentUri + videoContentId + "?token=" + token;
+        tokenReadWriteLock.readLock().unlock();
+        embeddedMediaPlayer.media().startPaused(uri);
     }
 
     public StompSession connectWebSocket() {

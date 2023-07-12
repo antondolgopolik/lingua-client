@@ -1,6 +1,8 @@
 package by.bsuir.linguaclient.controller.component;
 
+import by.bsuir.linguaclient.api.lingua.LinguaClient;
 import lombok.extern.slf4j.Slf4j;
+import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,4 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class WordPanelController extends AbstractWordPanelController {
 
+    public WordPanelController(FxWeaver fxWeaver, LinguaClient linguaClient) {
+        super(fxWeaver, linguaClient);
+    }
 }

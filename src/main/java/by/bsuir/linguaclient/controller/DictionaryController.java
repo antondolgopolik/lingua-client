@@ -68,11 +68,12 @@ public class DictionaryController implements Initializable {
             TextInputDialog textInputDialog = new TextInputDialog();
             textInputDialog.setHeaderText("Enter size of training");
             textInputDialog.setContentText("Size of training:");
+            textInputDialog.getDialogPane().getStylesheets().add(getClass().getResource("/css/AddWordDialogViewStyle.css").toExternalForm());
             textInputDialog.showAndWait().map(Integer::parseInt).ifPresent(size -> {
                 try {
                     List<DictionaryWordDto> dictionaryWordDtos = linguaClient.getTraining(dictionaryDto.getId(), size).get();
                     FxControllerAndView<TrainingController, Parent> controllerAndView = fxWeaver.load(TrainingController.class);
-                    controllerAndView.getController().fill(dictionaryWordDtos);
+                    controllerAndView.getController().fill(dictionaryDto, dictionaryWordDtos);
                     startTrainingButton.getScene().setRoot(controllerAndView.getView().orElseThrow());
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);

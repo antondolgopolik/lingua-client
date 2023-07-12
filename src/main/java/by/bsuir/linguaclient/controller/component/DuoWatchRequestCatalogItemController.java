@@ -73,6 +73,7 @@ public class DuoWatchRequestCatalogItemController implements Initializable {
                 } else {
                     alert = new Alert(Alert.AlertType.WARNING, "Duo Watch Response wasn't created", ButtonType.OK);
                 }
+                alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/AddWordDialogViewStyle.css").toExternalForm());
                 alert.showAndWait();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);

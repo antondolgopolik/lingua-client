@@ -1,16 +1,22 @@
 package by.bsuir.linguaclient.controller.component;
 
+import by.bsuir.linguaclient.api.lingua.LinguaClient;
+import by.bsuir.linguaclient.controller.dialog.AddWordDialogController;
 import by.bsuir.linguaclient.dto.dictionary.*;
+import by.bsuir.linguaclient.dto.lingua.AddWordToDictionaryFormDto;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import net.rgielen.fxweaver.core.FxWeaver;
 
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
-public class AbstractWordPanelController {
+public abstract class AbstractWordPanelController implements Initializable {
 
     @FXML
     private HBox topBarHBox;
@@ -18,6 +24,45 @@ public class AbstractWordPanelController {
     private Button addToDictionaryButton;
     @FXML
     private TreeView<String> wordTreeView;
+
+    private final FxWeaver fxWeaver;
+    private final LinguaClient linguaClient;
+
+    private DicResultDto currentDicResultDto;
+
+    protected AbstractWordPanelController(FxWeaver fxWeaver, LinguaClient linguaClient) {
+        this.fxWeaver = fxWeaver;
+        this.linguaClient = linguaClient;
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        addToDictionaryButton.setOnAction(event -> {
+            AddWordToDictionaryFormDto addWordToDictionaryFormDto = new AddWordToDictionaryFormDto();
+            DefinitionDto definitionDto = currentDicResultDto.getDefinitions().get(0);
+            addWordToDictionaryFormDto.setFirstLanguageText(definitionDto.getText());
+            addWordToDictionaryFormDto.setSecondLanguageText(definitionDto.getTranslations().get(0).getText());
+            addWordToDictionaryFormDto.setTranscription(definitionDto.getTranscription());
+
+            AddWordDialogController addWordDialogController = fxWeaver.loadController(AddWordDialogController.class);
+            addWordDialogController.fill(addWordToDictionaryFormDto);
+            addWordDialogController.showAndWait().ifPresent(result -> {
+                try {
+                    boolean success = linguaClient.addWordToDictionary(result.getKey(), result.getValue()).get();
+                    Alert alert;
+                    if (success) {
+                        alert = new Alert(Alert.AlertType.INFORMATION, "Word was successfully added", ButtonType.OK);
+                    } else {
+                        alert = new Alert(Alert.AlertType.WARNING, "Word wasn't added, some error occurred", ButtonType.OK);
+                    }
+                    alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/AddWordDialogViewStyle.css").toExternalForm());
+                    alert.showAndWait();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+    }
 
     public void fill(DicResultDto dicResultDto) {
         TreeItem<String> root = new TreeItem<>("Definitions");
@@ -30,6 +75,8 @@ public class AbstractWordPanelController {
             }
         }
         wordTreeView.setRoot(root);
+        addToDictionaryButton.setDisable(false);
+        currentDicResultDto = dicResultDto;
     }
 
     private TreeItem<String> fillDefinition(DefinitionDto definitionDto) {

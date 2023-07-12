@@ -42,6 +42,7 @@ public class OnHoldDuoWatchRequestItemController extends AbstractPersonalDuoWatc
                     } else {
                         alert = new Alert(Alert.AlertType.WARNING, "Duo Watch Response wasn't accepted", ButtonType.OK);
                     }
+                    alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/AddWordDialogViewStyle.css").toExternalForm());
                     alert.showAndWait();
                 } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);

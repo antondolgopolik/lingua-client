@@ -81,12 +81,25 @@ public class VideoContentDetailsController implements Initializable {
 
     private void watchButtonActionHandler(ActionEvent event) {
         WatchDialogController watchDialogController = fxWeaver.loadController(WatchDialogController.class);
+        watchDialogController.setTitle("Choose video content localization and second language");
         watchDialogController.setVideoContentDetailsDto(videoContentDetailsDto);
         watchDialogController.showAndWait().ifPresent(result -> {
-            FxControllerAndView<PlayerController, Parent> controllerAndView = fxWeaver.load(PlayerController.class);
-            PlayerController playerController = controllerAndView.getController();
             var videoContentLocDto = result.getKey();
             var subtitleDto = result.getValue();
+
+            try {
+                boolean success = linguaClient.createViewHistoryRecord(videoContentLocDto.getId()).get();
+                if (!success) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "View history record wasn't created", ButtonType.OK);
+                    alert.showAndWait();
+                    return;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+
+            FxControllerAndView<PlayerController, Parent> controllerAndView = fxWeaver.load(PlayerController.class);
+            PlayerController playerController = controllerAndView.getController();
             playerController.fill(
                     null,
                     videoContentLocDto.getId(), subtitleDto.getId(),
@@ -112,6 +125,7 @@ public class VideoContentDetailsController implements Initializable {
                 } else {
                     alert = new Alert(Alert.AlertType.WARNING, "Duo Watch Request wasn't created as you already have request for given video content localization", ButtonType.OK);
                 }
+                alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/AddWordDialogViewStyle.css").toExternalForm());
                 alert.showAndWait();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);

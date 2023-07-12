@@ -7,12 +7,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox prefHeight="800.0" prefWidth="500.0" styleClass="word-panel" stylesheets="@../css/WordPanelViewStyle.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="by.bsuir.linguaclient.controller.component.WordPanelController">
    <children>
       <HBox fx:id="topBarHBox" alignment="CENTER" styleClass="add-hbox">
          <children>
-                <Button fx:id="addToDictionaryButton" mnemonicParsing="false" styleClass="add-button" text="Add to dictionary" />
+                <Button fx:id="addToDictionaryButton" disable="true" mnemonicParsing="false" styleClass="add-button" text="Add to dictionary" />
          </children>
       </HBox>
       <Separator>

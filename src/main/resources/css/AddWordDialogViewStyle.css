@@ -1,0 +1,70 @@
+@import "CommonStyles.css";
+
+.label {
+    -fx-font-size: 18;
+}
+
+.text-field {
+    -fx-font-size: 18;
+    -fx-text-fill: #393E46;
+    -fx-background-color: #F7F7F7;
+    -fx-background-radius: 12;
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+}
+
+.choice-box {
+    -fx-background-color: #393E46;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.choice-box .label {
+    -fx-text-fill: #F7F7F7;
+}
+
+.choice-box .arrow {
+    -fx-font-size: 16;
+    -fx-background-color: #F7F7F7;
+}
+
+.choice-box .context-menu {
+    -fx-background-color: #F7F7F7;
+    -fx-border-color: #393E46;
+}
+
+.choice-box .context-menu .menu-item {
+    -fx-background-color: #F7F7F7;
+    -fx-text-fill: #393E46;
+}
+
+.choice-box .context-menu .menu-item .label {
+    -fx-text-fill: #393E46;
+}
+
+.choice-box .context-menu .menu-item:focused {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+}
+
+.choice-box .context-menu .menu-item:focused .label {
+    -fx-text-fill: #F7F7F7;
+}
+
+.dialog-pane .button-bar .button:default {
+    -fx-background-color: #393E46;
+    -fx-text-fill: #F7F7F7;
+    -fx-font-size: 18;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.dialog-pane .button-bar .button:cancel {
+    -fx-background-color: #F7F7F7;
+    -fx-text-fill: #393E46;
+    -fx-font-size: 18;
+    -fx-border-color: #393E46;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}

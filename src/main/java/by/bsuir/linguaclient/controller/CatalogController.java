@@ -69,6 +69,7 @@ public class CatalogController implements Initializable {
         });
         searchTextField.setOnAction(event -> search());
         sortChoiceBox.getItems().addAll("Views", "Recommendation");
+        sortChoiceBox.setValue("Views");
         search();
     }
 
@@ -80,7 +81,7 @@ public class CatalogController implements Initializable {
         try {
             CatalogItemPageDto pageDto = linguaClient.catalogSearch(
                     searchQuery,
-                    page, 15
+                    page, 15, sortChoiceBox.getValue()
             ).get();
 
             Integer totalPages = pageDto.getTotalPages();

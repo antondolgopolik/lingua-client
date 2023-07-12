@@ -62,6 +62,7 @@ public class DuoWatchRequestCatalogController implements Initializable {
             secondLangChoiceBox.getItems().addAll(languageDtos);
         }));
         sortChoiceBox.getItems().addAll("Views", "Recommendation");
+        sortChoiceBox.setValue("Views");
         search();
     }
 
@@ -77,7 +78,7 @@ public class DuoWatchRequestCatalogController implements Initializable {
                     searchQuery,
                     videoContentLang != null ? videoContentLang.getId() : null,
                     secondLang != null ? secondLang.getId() : null,
-                    page, 15
+                    page, 15, sortChoiceBox.getValue()
             ).get();
 
             Integer totalPages = pageDto.getTotalPages();
